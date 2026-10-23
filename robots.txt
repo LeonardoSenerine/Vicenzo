@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /assets/originais/
 
-Sitemap: https://vicenzo.vercel.app/sitemap.xml
+Sitemap: https://vicenzosaggio.vercel.app/sitemap.xml
