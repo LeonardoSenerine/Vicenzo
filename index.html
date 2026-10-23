@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://vicenzosaggio.vercel.app/">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Vincenzo Saggio">
-<meta name="theme-color" content="#F3EEE7">
+<meta name="theme-color" content="#F4F0E8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
 <meta property="og:type" content="website">
@@ -35,77 +35,170 @@
   "url": "https://vicenzosaggio.vercel.app/",
   "image": "https://vicenzosaggio.vercel.app/assets/og.jpg",
   "description": "Moda masculina clássica com proporções amplas e matérias-primas naturais.",
+  "email": "comercial@vincenzosaggio.com",
   "sameAs": ["https://vincenzosaggio.com/"]
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+<link rel="preload" as="image" href="assets/img/6.jpg" imagesrcset="assets/img/6-640.jpg 640w, assets/img/6-960.jpg 960w, assets/img/6.jpg 1500w" imagesizes="(min-width: 900px) 58vw, 100vw" fetchpriority="high">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <a class="skip" href="#colecao">Pular para a coleção</a>
 
-<p class="announce">Envio gratuito para todo o Brasil</p>
+<p class="announce"><span>Envio gratuito para todo o Brasil</span><span class="announce-sep" aria-hidden="true"></span><span class="announce-extra">Trocas em até 7 dias</span></p>
 
 <header class="top">
-  <button class="icon-btn" type="button" data-open-menu aria-label="Abrir menu">
-    <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M2 6h18M2 11h18M2 16h18" stroke="currentColor" stroke-width="1.6"/></svg>
+  <button class="icon-btn only-sm" type="button" data-open-menu aria-label="Abrir menu">
+    <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M2 7h18M2 15h18" stroke="currentColor" stroke-width="1.5"/></svg>
   </button>
+  <nav class="nav" aria-label="Principal">
+    <a href="#colecao" data-jump="todas">Coleção</a>
+    <a href="#colecao" data-jump="calca">Calças</a>
+    <a href="#colecao" data-jump="camisa">Camisas</a>
+    <a href="#looks">Looks</a>
+    <a href="#marca">A marca</a>
+  </nav>
   <a class="wordmark" href="#" aria-label="Vincenzo Saggio, início">Vincenzo Saggio</a>
-  <button class="bag-btn" type="button" data-open-bag aria-label="Abrir sacola">(<span data-bag-count>0</span>)</button>
+  <button class="bag-btn" type="button" data-open-bag aria-label="Abrir sacola"><span class="only-lg">Sacola</span> <span class="bag-count" data-bag-count>0</span></button>
 </header>
 
 <main>
 
-  <section class="hero" data-parallax>
-    <img src="assets/img/6.jpg" alt="Vincenzo sentado num banco de madeira, de camisa branca e calça camelo de pregas, ao lado de um criado-mudo antigo" fetchpriority="high">
+  <!-- 1. Campanha: a frase é da própria marca; a foto mostra duas peças à venda -->
+  <section class="hero" aria-labelledby="hero-h">
     <div class="hero-copy">
-      <h1 class="giant" data-split>Acervo</h1>
-      <a class="kicker-link" href="#colecao">Ver a coleção</a>
+      <p class="eyebrow">Coleção Acervo</p>
+      <h1 id="hero-h" class="hero-title">
+        <span class="line"><span>O clássico</span></span>
+        <span class="line"><span>não precisa</span></span>
+        <span class="line"><span>ser tão <em>rígido.</em></span></span>
+      </h1>
+      <p class="hero-sub">Calças de lã fria e camisas relaxed, com proporções amplas e matérias-primas naturais.</p>
+      <div class="hero-actions">
+        <a class="btn" href="#colecao" data-jump="todas">Ver a coleção</a>
+        <a class="link-arrow" href="#monte">Monte o seu look</a>
+      </div>
     </div>
+    <figure class="hero-media">
+      <img src="assets/img/6.jpg" srcset="assets/img/6-640.jpg 640w, assets/img/6-960.jpg 960w, assets/img/6.jpg 1500w" sizes="(min-width: 900px) 58vw, 100vw" alt="Vincenzo sentado num banco de madeira, de camisa branca e calça camelo de pregas, ao lado de um criado-mudo antigo" fetchpriority="high" width="1500" height="2000">
+      <figcaption class="hero-caption">
+        <span>Na foto</span>
+        <a href="#peca-camisa-branca" data-product="camisa-branca">Camisa Relaxed, branca</a>
+        <a href="#peca-calca-camelo" data-product="calca-camelo">Calça Relaxed de Lã Fria, camelo</a>
+      </figcaption>
+    </figure>
   </section>
 
-  <section class="intro">
-    <p class="legenda">O clássico não precisa ser tão rígido:</p>
-    <p>A coleção nasce da ideia de construir um guarda-roupa que permaneça. A partir dos fundamentos do vestir masculino, camisa e calça, o Acervo traz proporções amplas, matérias-primas naturais e uma elegância menos rígida, pensada para a vida contemporânea.</p>
-    <a class="serif-link" href="#colecao">Ver a coleção Acervo</a>
-  </section>
-
-  <nav class="tiles" aria-label="Categorias">
-    <a class="tile" href="#colecao" data-jump="calca" data-reveal data-parallax>
-      <img src="assets/img/1.jpg" alt="" loading="lazy">
-      <span class="tile-word" data-split>Calças</span>
-      <span class="tile-cta">Ver todas</span>
-    </a>
-    <a class="tile" href="#colecao" data-jump="camisa" data-reveal data-parallax>
-      <img src="assets/img/4.jpg" alt="" loading="lazy">
-      <span class="tile-word" data-split>Camisas</span>
-      <span class="tile-cta">Ver todas</span>
-    </a>
-  </nav>
-
+  <!-- 2. Coleção -->
   <section class="colecao" id="colecao" aria-labelledby="colecao-h">
     <div class="colecao-head">
-      <h2 id="colecao-h">Coleção Acervo</h2>
-      <div class="filters" role="group" aria-label="Filtrar peças">
-        <button type="button" class="is-on" data-filter="todas" aria-pressed="true">Todas</button>
-        <button type="button" data-filter="calca" aria-pressed="false">Calças</button>
-        <button type="button" data-filter="camisa" aria-pressed="false">Camisas</button>
+      <div>
+        <h2 id="colecao-h" class="title-lg">A coleção</h2>
+        <p class="colecao-intro">Um guarda-roupa que permanece, a partir dos fundamentos do vestir masculino: camisa e calça.</p>
+      </div>
+      <div class="colecao-tools">
+        <div class="filters" role="group" aria-label="Filtrar peças">
+          <button type="button" class="is-on" data-filter="todas" aria-pressed="true">Todas</button>
+          <button type="button" data-filter="calca" aria-pressed="false">Calças</button>
+          <button type="button" data-filter="camisa" aria-pressed="false">Camisas</button>
+        </div>
+        <p class="count" data-count aria-live="polite">5 peças</p>
       </div>
     </div>
     <ul class="grid" data-grid></ul>
   </section>
 
-  <!-- Camisa por cima, calça por baixo: as duas fotos se encontram na cintura -->
-  <section class="look" id="look" aria-labelledby="look-h">
-    <div class="look-head">
-      <p class="legenda">Camisa e calça, os fundamentos:</p>
-      <h2 id="look-h" class="giant" data-split>Monte o look</h2>
-      <p class="look-sub">Escolha uma de cada e veja as duas juntas antes de levar.</p>
+  <!-- 3. Os detalhes: só fatos que estão nas fichas oficiais -->
+  <section class="detalhes" aria-labelledby="detalhes-h">
+    <div class="detalhes-head">
+      <p class="eyebrow">Matéria e construção</p>
+      <h2 id="detalhes-h" class="title-lg">O valor está no que se vê de perto.</h2>
     </div>
-    <div class="look-body">
+
+    <article class="spread">
+      <figure class="spread-media" data-reveal>
+        <img src="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1258.jpg?width=1200" srcset="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1258.jpg?width=700 700w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1258.jpg?width=1200 1200w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1258.jpg?width=1800 1800w" sizes="(min-width: 900px) 50vw, 100vw" alt="Detalhe das pregas duplas e da cintura alta da calça camelo" loading="lazy" width="1200" height="1800">
+      </figure>
+      <div class="spread-text">
+        <p class="spread-kicker">Calça Relaxed</p>
+        <h3>Lã fria Paramount, Super 120’s</h3>
+        <p>Tecido 100% lã fria, com leveza, fluidez e toque refinado. Cintura alta, pregas duplas e modelagem ampla.</p>
+        <a class="link-arrow" href="#peca-calca-camelo" data-product="calca-camelo">Ver a calça</a>
+      </div>
+    </article>
+
+    <article class="spread is-flip">
+      <div class="spread-pair" data-reveal>
+        <figure>
+          <img src="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1320.jpg?width=900" srcset="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1320.jpg?width=600 600w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1320.jpg?width=900 900w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1320.jpg?width=1300 1300w" sizes="(min-width: 900px) 25vw, 50vw" alt="Punho dobrado da camisa listrada" loading="lazy" width="900" height="1350">
+          <figcaption>Pregas nos punhos</figcaption>
+        </figure>
+        <figure>
+          <img src="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-308.jpg?width=900" srcset="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-308.jpg?width=600 600w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-308.jpg?width=900 900w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-308.jpg?width=1300 1300w" sizes="(min-width: 900px) 25vw, 50vw" alt="Camisa listrada vista de costas" loading="lazy" width="900" height="1350">
+          <figcaption>e nas costas</figcaption>
+        </figure>
+      </div>
+      <div class="spread-text">
+        <p class="spread-kicker">Camisa Relaxed</p>
+        <h3>Tricoline leve, 100% algodão</h3>
+        <p>Respirável e pensada para o clima brasileiro. A aparência de uma camisa clássica, com construção menos rígida.</p>
+        <a class="link-arrow" href="#peca-camisa-listrada" data-product="camisa-listrada">Ver a camisa</a>
+      </div>
+    </article>
+
+    <!-- Tabela de medidas resumida como prova de cuidado: está em cada peça -->
+    <aside class="detalhes-note">
+      <p>Cada peça traz a tabela de medidas oficial, com as medidas tiradas em superfície plana.</p>
+    </aside>
+  </section>
+
+  <!-- 4. Looks da campanha: cada foto leva às peças que aparecem nela -->
+  <section class="looks" id="looks" aria-labelledby="looks-h">
+    <div class="looks-head">
+      <p class="eyebrow">A forma de usar</p>
+      <h2 id="looks-h" class="title-lg">O segredo mora também na forma de usar.</h2>
+      <p class="looks-sub">Botões abertos, mangas dobradas, uma boa calça sustentando o resto.</p>
+    </div>
+    <div class="looks-grid">
+      <figure class="look-card is-a" data-reveal>
+        <img src="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-528.jpg?width=1000" srcset="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-528.jpg?width=600 600w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-528.jpg?width=1000 1000w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-528.jpg?width=1500 1500w" sizes="(min-width: 900px) 40vw, 100vw" alt="Vincenzo sentado num pufe de couro, de camisa listrada e calça marrom, segurando os óculos" loading="lazy" width="1000" height="1500">
+        <figcaption>
+          <a href="#peca-camisa-listrada" data-product="camisa-listrada">Camisa Relaxed, listrada <span>R$ 579</span></a>
+          <a href="#peca-calca-marrom" data-product="calca-marrom">Calça Relaxed, marrom <span>R$ 1.190</span></a>
+          <a class="look-use" href="#monte" data-use-look="camisa-listrada,calca-marrom">Montar este look</a>
+        </figcaption>
+      </figure>
+      <figure class="look-card is-b" data-reveal>
+        <img src="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-255_3068b66d-d7b5-4e5e-ab78-73f681c11992.jpg?width=900" srcset="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-255_3068b66d-d7b5-4e5e-ab78-73f681c11992.jpg?width=600 600w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-255_3068b66d-d7b5-4e5e-ab78-73f681c11992.jpg?width=900 900w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/SAGGIO-255_3068b66d-d7b5-4e5e-ab78-73f681c11992.jpg?width=1300 1300w" sizes="(min-width: 900px) 28vw, 100vw" alt="Camisa listrada por dentro da calça cinza chumbo" loading="lazy" width="900" height="1350">
+        <figcaption>
+          <a href="#peca-camisa-listrada" data-product="camisa-listrada">Camisa Relaxed, listrada <span>R$ 579</span></a>
+          <a href="#peca-calca-cinza-chumbo" data-product="calca-cinza-chumbo">Calça Relaxed, cinza chumbo <span>R$ 1.190</span></a>
+          <a class="look-use" href="#monte" data-use-look="camisa-listrada,calca-cinza-chumbo">Montar este look</a>
+        </figcaption>
+      </figure>
+      <figure class="look-card is-c" data-reveal>
+        <img src="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1202.jpg?width=1400" srcset="https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1202.jpg?width=800 800w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1202.jpg?width=1400 1400w, https://cdn.shopify.com/s/files/1/0965/5799/0163/files/D75_1202.jpg?width=2000 2000w" sizes="(min-width: 900px) 60vw, 100vw" alt="Vincenzo sentado de camisa branca e calça camelo, ao lado de um criado-mudo antigo" loading="lazy" width="1500" height="1000">
+        <figcaption>
+          <a href="#peca-camisa-branca" data-product="camisa-branca">Camisa Relaxed, branca <span>R$ 549</span></a>
+          <a href="#peca-calca-camelo" data-product="calca-camelo">Calça Relaxed, camelo <span>R$ 1.190</span></a>
+          <a class="look-use" href="#monte" data-use-look="camisa-branca,calca-camelo">Montar este look</a>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 5. Monte o look: camisa por cima, calça por baixo, as duas se encontram na cintura -->
+  <section class="monte" id="monte" aria-labelledby="monte-h">
+    <div class="monte-head">
+      <h2 id="monte-h" class="title-lg">Monte o seu look</h2>
+      <p class="monte-sub">Escolha uma camisa e uma calça, veja as duas juntas e leve o par.</p>
+    </div>
+    <div class="monte-body">
       <div class="look-stage" aria-hidden="true">
         <img class="look-top" data-look-img="camisa" alt="">
         <img class="look-bottom" data-look-img="calca" alt="">
@@ -123,154 +216,216 @@
           <p class="look-name" data-look-name></p>
           <div class="sizes"><div data-look-sizes></div></div>
         </fieldset>
-        <p class="look-total"><span>O look</span><span data-look-total></span></p>
-        <p class="pp-error" data-look-error role="alert"></p>
-        <button class="btn" type="button" data-look-add>Levar o look</button>
+        <p class="look-total"><span>Total do look</span><span data-look-total></span></p>
+        <p class="error" data-look-error role="alert"></p>
+        <button class="btn btn-block" type="button" data-look-add>Adicionar o look à sacola</button>
       </div>
     </div>
   </section>
 
-  <!-- Frases das postagens da marca, cada uma com o detalhe que ela descreve -->
-  <section class="uso" aria-labelledby="uso-h">
-    <h2 class="legenda" id="uso-h">O segredo mora também na forma de usar:</h2>
-    <ol class="uso-list">
-      <li data-reveal>
-        <img src="assets/img/4.jpg" alt="Camisa listrada com os primeiros botões abertos e um pingente dourado" loading="lazy">
-        <h3>Botões abertos</h3>
-        <p>E uma boa combinação de joias. A camisa relaxed não pede gravata.</p>
-      </li>
-      <li data-reveal>
-        <img src="assets/img/5.jpg" alt="Punho da camisa listrada dobrado, com um anel no dedo" loading="lazy">
-        <h3>As mangas dobradas</h3>
-        <p>As pregas nos punhos deixam a dobra cair do jeito certo, sem esforço.</p>
-      </li>
-      <li data-reveal>
-        <img src="assets/img/8.jpg" alt="Calça camelo de pregas dobrada sobre o taco de madeira" loading="lazy">
-        <h3>Uma boa calça</h3>
-        <p>Sustenta muito bem os códigos clássicos, mesmo quando o resto é uma camiseta ou até um tênis.</p>
-      </li>
-    </ol>
-  </section>
-
-  <section class="feature" id="vincenzo" data-parallax>
-    <img data-reveal src="assets/img/vicenzo/rua-pb.jpg" alt="Vincenzo de óculos escuros e blazer diante de uma fachada de pedra" loading="lazy">
-    <div class="feature-copy">
-      <h2 data-split>Quem é Vincenzo</h2>
-      <a class="kicker-link" href="#historia">Ler a história</a>
-    </div>
-  </section>
-
-  <section class="historia" id="historia" aria-label="A história da marca">
-    <div class="historia-text">
-      <p>Vincenzo Saggio nasce do encontro entre a sofisticação italiana e o calor da cultura brasileira. Entre o refinado e o rústico. Entre o clássico e o tropical.</p>
-      <p>É a arte da sprezzatura: a elegância sem esforço, contraditória, sedutora. Não é somente uma marca de roupas. É identidade, naturalidade, a elegância reconhecida na imperfeição.</p>
+  <!-- 6. A marca: só o texto publicado em "Sobre nós" na loja oficial -->
+  <section class="marca" id="marca" aria-labelledby="marca-h">
+    <div class="marca-grid">
+      <figure class="marca-photo" data-reveal>
+        <img src="assets/img/vicenzo/rua-pb.jpg" alt="Vincenzo de óculos escuros e blazer diante de uma fachada de pedra, em preto e branco" loading="lazy" width="1500" height="2000">
+      </figure>
+      <div class="marca-text">
+        <p class="eyebrow">A marca</p>
+        <h2 id="marca-h" class="marca-title">A arte da <em>sprezzatura</em>.</h2>
+        <p class="marca-lead">Vincenzo Saggio nasce do encontro entre a sofisticação italiana e o calor da cultura brasileira.</p>
+        <p>A elegância sem esforço, contraditória, sedutora. Não é somente uma marca de roupas. É identidade, naturalidade, a elegância reconhecida na imperfeição.</p>
+      </div>
     </div>
     <!-- As contradições do texto, em pares: um lado em preto e branco, o outro em cor -->
     <div class="entre">
       <figure class="par" data-reveal>
-        <img src="assets/img/vicenzo/blazer-pb.jpg" alt="Vincenzo sentado de blazer e calça de alfaiataria, em preto e branco" loading="lazy">
+        <img src="assets/img/vicenzo/blazer-pb.jpg" alt="Vincenzo sentado de blazer e calça de alfaiataria, em preto e branco" loading="lazy" width="1500" height="2000">
         <figcaption>O refinado</figcaption>
       </figure>
       <figure class="par" data-reveal>
-        <img src="assets/img/vicenzo/rua-retrato.jpg" alt="Retrato de Vincenzo na rua, com camisa listrada e paletó cor de vinho no braço" loading="lazy">
-        <figcaption>e o rústico</figcaption>
+        <img src="assets/img/vicenzo/rua-retrato.jpg" alt="Retrato de Vincenzo na rua, com camisa listrada e paletó cor de vinho no braço" loading="lazy" width="1440" height="1920">
+        <figcaption>e o rústico.</figcaption>
       </figure>
       <figure class="par" data-reveal>
-        <img src="assets/img/vicenzo/sofa-gramado-pb.jpg" alt="Vincenzo sentado num sofá chesterfield sobre a grama, em preto e branco" loading="lazy">
+        <img src="assets/img/vicenzo/sofa-gramado-pb.jpg" alt="Vincenzo sentado num sofá chesterfield sobre a grama, em preto e branco" loading="lazy" width="1496" height="1995">
         <figcaption>O clássico</figcaption>
       </figure>
       <figure class="par" data-reveal>
-        <img src="assets/img/vicenzo/gramado-poltrona.jpg" alt="Vincenzo numa poltrona de vime sobre a grama, de blazer cinza e calça de linho" loading="lazy">
-        <figcaption>e o tropical</figcaption>
+        <img src="assets/img/vicenzo/gramado-poltrona.jpg" alt="Vincenzo numa poltrona de vime sobre a grama, de blazer cinza e calça de linho" loading="lazy" width="1496" height="1995">
+        <figcaption>e o tropical.</figcaption>
       </figure>
+    </div>
+    <div class="filme">
+      <video data-reveal src="assets/video/acervo.mp4" poster="assets/img/3.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Filme da coleção Acervo"></video>
+      <video data-reveal src="assets/video/vicenzo-gramado.mp4" poster="assets/img/vicenzo/gramado-sapatos.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Vincenzo num evento ao ar livre"></video>
     </div>
   </section>
 
-  <section class="filme" aria-label="Filme da coleção">
-    <video data-reveal src="assets/video/acervo.mp4" poster="assets/img/3.jpg" muted loop playsinline autoplay aria-label="Filme da coleção Acervo"></video>
-    <video data-reveal src="assets/video/vicenzo-gramado.mp4" poster="assets/img/vicenzo/gramado-sapatos.jpg" muted loop playsinline autoplay aria-label="Vincenzo num evento ao ar livre"></video>
+  <!-- 7. Serviço: as mesmas regras das políticas oficiais -->
+  <section class="servico" aria-label="Entrega, trocas e pagamento">
+    <div>
+      <h2>Envio gratuito</h2>
+      <p>Para todo o Brasil. Despacho em até 2 dias úteis após a confirmação do pagamento, com código de rastreio por e-mail.</p>
+    </div>
+    <div>
+      <h2>Trocas em até 7 dias</h2>
+      <p>Contados do recebimento, com a etiqueta afixada e sem sinais de uso. Peças com defeito: até 30 dias.</p>
+    </div>
+    <div>
+      <h2>Pagamento</h2>
+      <p>Cartão de crédito ou PIX, na loja oficial em vincenzosaggio.com.</p>
+    </div>
   </section>
-
-  <ul class="assure">
-    <li>Envio gratuito<br>para todo o Brasil</li>
-    <li>Lã fria Super 120’s<br>e algodão</li>
-    <li><a href="https://vincenzosaggio.com/policies/refund-policy" rel="noopener">Trocas e<br>devoluções</a></li>
-  </ul>
 
 </main>
 
 <footer class="foot">
-  <form class="news" data-news>
-    <label for="news-email">Receba as próximas peças antes de todo mundo</label>
-    <div class="news-row">
-      <input id="news-email" type="email" required placeholder="Seu e-mail" autocomplete="email">
-      <button type="submit">Assinar</button>
-    </div>
-    <p class="news-msg" role="status" aria-live="polite"></p>
-  </form>
-  <div class="foot-cols">
-    <div>
-      <h3>Ajuda</h3>
-      <ul>
-        <li><a href="https://vincenzosaggio.com/policies/shipping-policy" rel="noopener">Envio</a></li>
-        <li><a href="https://vincenzosaggio.com/policies/refund-policy" rel="noopener">Trocas e devoluções</a></li>
-        <li><a href="https://vincenzosaggio.com/pages/contact" rel="noopener">Contato</a></li>
-      </ul>
-    </div>
-    <div>
-      <h3>Legal</h3>
-      <ul>
-        <li><a href="privacidade.html">Privacidade</a></li>
-        <li><a href="privacidade.html#cookies">Cookies</a></li>
-        <li><a href="https://vincenzosaggio.com/policies/terms-of-service" rel="noopener">Termos de uso</a></li>
-      </ul>
+  <div class="foot-top">
+    <form class="news" data-news>
+      <label for="news-email">Receba as próximas peças antes de todo mundo</label>
+      <div class="news-row">
+        <input id="news-email" type="email" required placeholder="Seu e-mail" autocomplete="email">
+        <button type="submit">Assinar</button>
+      </div>
+      <p class="news-msg" role="status" aria-live="polite"></p>
+    </form>
+    <div class="foot-cols">
+      <div>
+        <h3>Loja</h3>
+        <ul>
+          <li><a href="#colecao" data-jump="todas">Coleção Acervo</a></li>
+          <li><a href="#colecao" data-jump="calca">Calças</a></li>
+          <li><a href="#colecao" data-jump="camisa">Camisas</a></li>
+          <li><a href="#monte">Monte o seu look</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Atendimento</h3>
+        <ul>
+          <li><a href="mailto:comercial@vincenzosaggio.com">comercial@vincenzosaggio.com</a></li>
+          <li><a href="https://vincenzosaggio.com/pages/contact" rel="noopener">Contato</a></li>
+          <li><a href="https://vincenzosaggio.com/policies/shipping-policy" rel="noopener">Entrega e frete</a></li>
+          <li><a href="https://vincenzosaggio.com/policies/refund-policy" rel="noopener">Trocas e devoluções</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Pagamento</h3>
+        <p class="foot-pay">Visa, Mastercard, Elo, American Express, Diners Club, Hypercard, JCB, Discover e PIX.</p>
+      </div>
+      <div>
+        <h3>Legal</h3>
+        <ul>
+          <li><a href="privacidade.html">Privacidade</a></li>
+          <li><a href="privacidade.html#cookies">Cookies</a></li>
+          <li><a href="https://vincenzosaggio.com/policies/terms-of-service" rel="noopener">Termos de uso</a></li>
+          <li><a href="https://vincenzosaggio.com/policies/legal-notice" rel="noopener">Aviso legal</a></li>
+        </ul>
+      </div>
+      <!-- Redes sociais: a loja oficial ainda não publica perfis; adicionar aqui quando houver -->
     </div>
   </div>
-  <p class="foot-mark" aria-hidden="true" data-split>Vincenzo Saggio</p>
+  <p class="foot-mark" aria-hidden="true"><span data-split>Vincenzo</span><span data-split>Saggio</span></p>
+  <p class="foot-small">© 2026 Vincenzo Saggio</p>
 </footer>
 
-<!-- Menu -->
+<!-- Página de produto: abre por cima da loja, com endereço próprio (#peca-...) -->
+<section class="pv" data-product-view data-lenis-prevent role="dialog" aria-modal="true" aria-labelledby="pv-title" hidden>
+  <div class="pv-top">
+    <nav class="crumbs" aria-label="Caminho" data-pv-crumb></nav>
+    <button class="pv-close" type="button" data-pv-close>Fechar</button>
+  </div>
+
+  <div class="pv-main">
+    <div class="pv-gallery-wrap">
+      <div class="pv-gallery" data-pv-gallery tabindex="0" role="region" aria-label="Fotos da peça"></div>
+      <p class="pv-count" data-pv-count aria-hidden="true"></p>
+    </div>
+
+    <div class="pv-buy">
+      <h2 id="pv-title" class="pv-title" data-pv-title tabindex="-1"></h2>
+      <p class="pv-color" data-pv-color></p>
+      <p class="pv-price" data-pv-price></p>
+      <p class="pv-pay">Cartão de crédito ou PIX. Envio gratuito para todo o Brasil.</p>
+
+      <div class="pv-field" data-pv-colors>
+        <p class="pv-label">Cor: <span data-pv-color-name></span></p>
+        <div class="swatches" data-pv-swatches></div>
+      </div>
+
+      <fieldset class="pv-field sizes">
+        <legend class="pv-label">Tamanho</legend>
+        <div data-pv-sizes></div>
+      </fieldset>
+      <p class="pv-stock" data-pv-stock></p>
+
+      <details class="pv-chart" data-pv-chart-box>
+        <summary>Tabela de medidas</summary>
+        <div data-pv-chart></div>
+      </details>
+
+      <p class="error" data-pv-error role="alert"></p>
+      <button class="btn btn-block" type="button" data-pv-add>Adicionar à sacola</button>
+      <p class="pv-help">Em dúvida no tamanho? <a href="mailto:comercial@vincenzosaggio.com">Escreva para a gente</a>.</p>
+
+      <div class="pv-info">
+        <details>
+          <summary>Entrega</summary>
+          <p>Envio gratuito para todo o Brasil. Separação e despacho em até 2 dias úteis após a confirmação do pagamento; o prazo de entrega aparece no checkout. O código de rastreio chega por e-mail.</p>
+        </details>
+        <details>
+          <summary>Trocas e devoluções</summary>
+          <p>Troca ou devolução por arrependimento em até 7 dias corridos após o recebimento; peças com defeito, até 30 dias. A peça deve estar sem sinais de uso, sem ajustes, com a etiqueta e na embalagem original. Pedidos pelo e-mail <a href="mailto:comercial@vincenzosaggio.com">comercial@vincenzosaggio.com</a>.</p>
+          <p><a href="https://vincenzosaggio.com/policies/refund-policy" rel="noopener">Ler a política completa</a></p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="pv-story">
+    <div class="pv-facts">
+      <div><h3>Modelagem</h3><p data-pv-fit></p></div>
+      <div><h3>Material</h3><p><span data-pv-material></span> <span data-pv-material-note></span></p></div>
+      <div><h3>Como usar</h3><p data-pv-use></p></div>
+      <div><h3>No modelo</h3><p data-pv-model></p></div>
+    </div>
+    <div class="pv-pairs">
+      <h3 class="title-md" data-pv-pairs-title></h3>
+      <ul class="grid grid-pairs" data-pv-pairs></ul>
+    </div>
+  </div>
+
+  <!-- No celular, preço e botão ficam à mão quando o botão principal sai da tela -->
+  <div class="pv-bar">
+    <div><span class="pv-bar-name" data-pv-bar-name></span><span class="pv-bar-price" data-pv-bar-price></span></div>
+    <button class="btn" type="button" data-pv-bar-add>Adicionar à sacola</button>
+  </div>
+</section>
+
+<!-- Menu (celular) -->
 <div class="scrim" data-scrim hidden></div>
 <aside data-lenis-prevent class="panel menu-panel" data-menu-panel role="dialog" aria-modal="true" aria-label="Menu" hidden>
-  <button class="close" type="button" data-close aria-label="Fechar">Fechar</button>
+  <button class="close" type="button" data-close>Fechar</button>
   <ul class="menu-list">
-    <li><a href="#colecao" data-menu-link data-jump="todas">Coleção Acervo</a></li>
+    <li><a href="#colecao" data-menu-link data-jump="todas">Coleção</a></li>
     <li><a href="#colecao" data-menu-link data-jump="calca">Calças</a></li>
     <li><a href="#colecao" data-menu-link data-jump="camisa">Camisas</a></li>
-    <li><a href="#look" data-menu-link>Monte o look</a></li>
-    <li><a href="#vincenzo" data-menu-link>Quem é Vincenzo</a></li>
+    <li><a href="#looks" data-menu-link>Looks</a></li>
+    <li><a href="#monte" data-menu-link>Monte o seu look</a></li>
+    <li><a href="#marca" data-menu-link>A marca</a></li>
   </ul>
-</aside>
-
-<!-- Produto -->
-<aside data-lenis-prevent class="panel product-panel" data-product-panel role="dialog" aria-modal="true" aria-labelledby="pp-title" hidden>
-  <button class="close" type="button" data-close aria-label="Fechar">Fechar</button>
-  <div class="pp-gallery" data-pp-gallery></div>
-  <div class="pp-info">
-    <h3 id="pp-title" data-pp-title></h3>
-    <p class="pp-color" data-pp-color></p>
-    <p class="pp-price" data-pp-price></p>
-    <fieldset class="sizes">
-      <legend>Tamanho</legend>
-      <div data-pp-sizes></div>
-    </fieldset>
-    <p class="pp-help">Em dúvida no tamanho? <a href="https://vincenzosaggio.com/pages/contact" rel="noopener">Fale com a gente</a></p>
-    <p class="pp-error" data-pp-error role="alert"></p>
-    <button class="btn" type="button" data-pp-add>Adicionar à sacola</button>
-    <p class="pp-note">Envio gratuito para todo o Brasil.</p>
-    <div class="pp-desc" data-pp-desc></div>
-  </div>
+  <p class="menu-foot">Envio gratuito para todo o Brasil.<br><a href="mailto:comercial@vincenzosaggio.com">comercial@vincenzosaggio.com</a></p>
 </aside>
 
 <!-- Sacola -->
 <aside data-lenis-prevent class="panel bag-panel" data-bag-panel role="dialog" aria-modal="true" aria-labelledby="bag-title" hidden>
-  <button class="close" type="button" data-close aria-label="Fechar">Fechar</button>
-  <h3 id="bag-title">Sacola</h3>
+  <button class="close" type="button" data-close>Fechar</button>
+  <h2 id="bag-title" class="bag-title">Sacola</h2>
   <ul class="bag-list" data-bag-list></ul>
   <div class="bag-pair" data-bag-pair hidden></div>
   <div class="bag-foot" data-bag-foot>
     <p class="bag-total"><span>Subtotal</span><span data-bag-total></span></p>
-    <button class="btn" type="button" data-checkout>Finalizar compra</button>
+    <p class="bag-ship">Envio gratuito para todo o Brasil.</p>
+    <button class="btn btn-block" type="button" data-checkout>Finalizar compra</button>
     <p class="bag-note">O pagamento é feito na loja oficial, em vincenzosaggio.com, com a sua sacola já montada.</p>
   </div>
 </aside>
