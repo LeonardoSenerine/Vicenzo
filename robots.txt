@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /assets/originais/
+
+Sitemap: https://vicenzo.vercel.app/sitemap.xml

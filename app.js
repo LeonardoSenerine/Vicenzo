@@ -306,6 +306,31 @@ if (!MOTION) {
 
 renderBag();
 
+// ---------- Aviso de armazenamento ----------
+// Só armazenamento estritamente necessário (a sacola), então o aviso informa e não bloqueia.
+const NOTICE_KEY = 'vs-aviso';
+let noticeSeen = false;
+try { noticeSeen = localStorage.getItem(NOTICE_KEY) === '1'; } catch { /* sem armazenamento: mostra o aviso */ }
+if (!noticeSeen) {
+  const notice = document.createElement('div');
+  notice.className = 'notice';
+  notice.setAttribute('role', 'region');
+  notice.setAttribute('aria-label', 'Aviso sobre armazenamento');
+  notice.innerHTML = `
+    <p>Usamos o armazenamento do seu navegador só para guardar a sua sacola. Não usamos cookies de publicidade nem de rastreamento.</p>
+    <div class="notice-actions">
+      <button type="button">Entendi</button>
+      <a href="privacidade.html#cookies">Saiba mais</a>
+    </div>`;
+  document.body.append(notice);
+  $('button', notice).addEventListener('click', () => {
+    try { localStorage.setItem(NOTICE_KEY, '1'); } catch { /* fecha só nesta visita */ }
+    if (!MOTION) { notice.remove(); return; }
+    notice.classList.add('is-leaving');
+    setTimeout(() => notice.remove(), 600);
+  });
+}
+
 // ---------- Movimento ----------
 
 // Palavras grandes viram letras que sobem uma a uma; o leitor de tela recebe o texto inteiro
