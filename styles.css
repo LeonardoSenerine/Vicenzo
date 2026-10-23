@@ -244,7 +244,7 @@ h1, h2, h3 { margin: 0; font-weight: 400; }
 }
 .uso-list p { margin: 0; font-size: 17px; line-height: 1.5; opacity: .85; max-width: 24em; }
 
-/* ---------- Quem é Vicenzo ---------- */
+/* ---------- Quem é Vincenzo ---------- */
 .feature { position: relative; height: 100svh; min-height: 560px; overflow: hidden; margin-top: clamp(64px, 8vw, 112px); }
 .feature > img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 40%; }
 .feature-copy {
