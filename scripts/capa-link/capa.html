@@ -1,0 +1,73 @@
+<!doctype html>
+<!--
+  Capa de link da Vincenzo Saggio (1200x630), no mesmo formato da capa da Flanar:
+  painel da marca à esquerda, foto à direita, selo no canto e filete embaixo.
+  Gere a imagem com: powershell -File scripts/capa-link/gerar.ps1
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Capa de link, Vincenzo Saggio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Instrument+Sans:wght@400..700&display=block" rel="stylesheet">
+<style>
+  :root { --carvao: #1D1A17; --marfim: #F4F0E8; --pedra: #CFC7BA; --couro: #7A2E22; --couro-claro: #B4573F; }
+  * { margin: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; background: var(--carvao); }
+  .capa { position: relative; width: 1200px; height: 630px; overflow: hidden; background: var(--carvao); color: var(--marfim); font-family: "Instrument Sans", sans-serif; }
+
+  /* Risca de giz bem de leve, como o tecido de alfaiataria. */
+  .textura { position: absolute; inset: 0; opacity: .07;
+    background: repeating-linear-gradient(90deg, transparent 0 22px, var(--marfim) 22px 23px); }
+
+  /* Foto à direita, fundindo no carvão pela esquerda. */
+  .foto { position: absolute; top: 0; right: 0; width: 640px; height: 630px; overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 30%); mask-image: linear-gradient(to right, transparent 0%, black 30%); }
+  .foto img { position: absolute; top: -70px; left: -40px; width: 720px; height: auto; }
+
+  .texto { position: absolute; left: 64px; top: 58px; width: 620px; }
+  .marca { font-family: "Bodoni Moda"; font-weight: 500; font-variation-settings: "opsz" 28; font-size: 30px; letter-spacing: .14em; text-transform: uppercase; }
+  h1 { margin-top: 64px; font-family: "Bodoni Moda"; font-weight: 500; font-variation-settings: "opsz" 40;
+    font-size: 82px; line-height: .98; letter-spacing: -.02em; }
+  .tarja { display: inline-block; margin-top: 30px; padding: 10px 18px 9px; background: var(--couro); color: var(--marfim);
+    font-weight: 600; font-size: 22px; letter-spacing: .14em; text-transform: uppercase; }
+  .itens { display: flex; align-items: center; gap: 16px; margin-top: 28px; white-space: nowrap; font-size: 23px; font-weight: 500; }
+  .itens i { width: 22px; height: 2px; background: var(--couro-claro); }
+  .local { margin-top: 12px; font-size: 15px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--pedra); }
+
+  .selo { position: absolute; top: 34px; right: 40px; width: 168px; height: 168px; border-radius: 50%; background: var(--marfim);
+    box-shadow: 0 18px 40px -18px rgba(0,0,0,.6); }
+  .selo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .selo text { font-family: "Instrument Sans"; font-weight: 600; font-size: 10.5px; letter-spacing: .12em; fill: var(--carvao); text-transform: uppercase; }
+  .selo .mono { font-family: "Bodoni Moda"; font-weight: 500; font-size: 30px; letter-spacing: 0; fill: var(--couro); text-transform: none; }
+
+  .filete { position: absolute; left: 0; right: 0; bottom: 0; height: 10px; background: var(--couro); }
+</style>
+</head>
+<body>
+<div class="capa">
+  <div class="textura" aria-hidden="true"></div>
+
+  <div class="foto"><img src="../../assets/img/6.jpg" alt=""></div>
+
+  <div class="texto">
+    <p class="marca">Vincenzo Saggio</p>
+    <h1>O clássico não<br>precisa ser<br>tão rígido.</h1>
+    <p class="tarja">Coleção Acervo</p>
+    <p class="itens">Calças de lã fria<i></i>Camisas relaxed</p>
+    <p class="local">Envio gratuito para todo o Brasil</p>
+  </div>
+
+  <div class="selo">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <defs><path id="circulo" d="M50 50m-37 0a37 37 0 1 1 74 0a37 37 0 1 1 -74 0"/></defs>
+      <text><textPath href="#circulo" textLength="230" lengthAdjust="spacing">Sprezzatura ✱ Coleção Acervo ✱</textPath></text>
+      <text class="mono" x="50" y="60" text-anchor="middle">VS</text>
+    </svg>
+  </div>
+
+  <div class="filete"></div>
+</div>
+</body>
+</html>

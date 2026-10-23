@@ -17,14 +17,15 @@
 <meta property="og:url" content="https://vicenzosaggio.vercel.app/">
 <meta property="og:title" content="Coleção Acervo – Vincenzo Saggio">
 <meta property="og:description" content="Calças de lã fria e camisas relaxed. Proporções amplas, matérias-primas naturais e uma elegância menos rígida.">
-<meta property="og:image" content="https://vicenzosaggio.vercel.app/assets/og.jpg">
+<meta property="og:image" content="https://vicenzosaggio.vercel.app/assets/og.jpg?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Vincenzo de camisa branca sentado ao lado de um criado-mudo antigo">
+<meta property="og:image:alt" content="Vincenzo Saggio: o clássico não precisa ser tão rígido. Coleção Acervo, calças de lã fria e camisas relaxed, com Vincenzo de camisa branca e calça camelo ao lado de um criado-mudo antigo">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Coleção Acervo – Vincenzo Saggio">
 <meta name="twitter:description" content="Calças de lã fria e camisas relaxed. Proporções amplas, matérias-primas naturais e uma elegância menos rígida.">
-<meta name="twitter:image" content="https://vicenzosaggio.vercel.app/assets/og.jpg">
+<meta name="twitter:image" content="https://vicenzosaggio.vercel.app/assets/og.jpg?v=2">
+<meta name="twitter:image:alt" content="Vincenzo Saggio: o clássico não precisa ser tão rígido. Coleção Acervo.">
 
 <script type="application/ld+json">
 {
@@ -32,7 +33,7 @@
   "@type": "ClothingStore",
   "name": "Vincenzo Saggio",
   "url": "https://vicenzosaggio.vercel.app/",
-  "image": "https://vicenzosaggio.vercel.app/assets/og.jpg",
+  "image": "https://vicenzosaggio.vercel.app/assets/og.jpg?v=2",
   "description": "Moda masculina clássica com proporções amplas e matérias-primas naturais.",
   "email": "comercial@vincenzosaggio.com",
   "sameAs": ["https://vincenzosaggio.com/"]
@@ -44,16 +45,37 @@
 <link rel="preload" as="image" href="assets/img/6.jpg" imagesrcset="assets/img/6-640.jpg 640w, assets/img/6-960.jpg 960w, assets/img/6.jpg 1500w" imagesizes="(min-width: 900px) 58vw, 100vw" fetchpriority="high">
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script>
+  try {
+    if (!sessionStorage.getItem('vs-intro') && !matchMedia('(prefers-reduced-motion: reduce)').matches && !location.hash.startsWith('#peca-'))
+      document.documentElement.classList.add('intro');
+  } catch (e) {}
+</script>
 </head>
 <body>
+
+<div class="intro-veil" aria-hidden="true">
+  <svg class="intro-svg" width="100%" height="100%">
+    <defs>
+      <mask id="intro-janela" maskUnits="userSpaceOnUse" x="-200%" y="-200%" width="500%" height="500%">
+        <rect x="-200%" y="-200%" width="500%" height="500%" fill="#fff"/>
+        <g class="intro-furo" fill="#000" opacity="0"><text class="intro-l1">VINCENZO</text><text class="intro-l2">SAGGIO</text></g>
+      </mask>
+      <clipPath id="intro-cortina"><rect class="intro-cortina" x="0" y="0" width="0" height="100%"/></clipPath>
+    </defs>
+    <rect class="intro-fundo" width="100%" height="100%" mask="url(#intro-janela)"/>
+    <g class="intro-marca" clip-path="url(#intro-cortina)"><text class="intro-l1">VINCENZO</text><text class="intro-l2">SAGGIO</text></g>
+    <line class="intro-linha" x1="0" x2="0" y1="0" y2="0"/>
+  </svg>
+</div>
 
 <a class="skip" href="#colecao">Pular para a coleção</a>
 
 <p class="announce"><span>Envio gratuito para todo o Brasil</span><span class="announce-sep" aria-hidden="true"></span><span class="announce-extra">Trocas em até 7 dias</span></p>
 
 <header class="top">
-  <button class="icon-btn only-sm" type="button" data-open-menu aria-label="Abrir menu">
-    <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M2 7h18M2 15h18" stroke="currentColor" stroke-width="1.5"/></svg>
+  <button class="icon-btn menu-btn only-sm" type="button" data-open-menu aria-label="Abrir menu" aria-expanded="false">
+    <span class="burger" aria-hidden="true"><span></span><span></span></span>
   </button>
   <nav class="nav" aria-label="Principal">
     <a href="#colecao" data-jump="todas">Coleção</a>
@@ -63,7 +85,12 @@
     <a href="#marca">A marca</a>
   </nav>
   <a class="wordmark" href="#" aria-label="Vincenzo Saggio, início">Vincenzo Saggio</a>
-  <button class="bag-btn" type="button" data-open-bag aria-label="Abrir sacola"><span class="only-lg">Sacola</span> <span class="bag-count" data-bag-count>0</span></button>
+  <button class="bag-btn" type="button" data-open-bag aria-label="Abrir sacola" aria-expanded="false">
+    <span class="bag-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path class="bag-handle" d="M8.6 8.6V6.8a3.4 3.4 0 0 1 6.8 0v1.8"/><path class="bag-body" d="M4.9 8.6h14.2l-1.1 12.2H6z"/></svg>
+      <span class="bag-count" data-bag-count>0</span>
+    </span>
+  </button>
 </header>
 
 <main>
@@ -313,7 +340,7 @@
 <section class="pv" data-product-view data-lenis-prevent role="dialog" aria-modal="true" aria-labelledby="pv-title" hidden>
   <div class="pv-top">
     <nav class="crumbs" aria-label="Caminho" data-pv-crumb></nav>
-    <button class="pv-close" type="button" data-pv-close>Fechar</button>
+    <button class="pv-close" type="button" data-pv-close><span class="close-label">Fechar</span><span class="x" aria-hidden="true"></span></button>
   </div>
 
   <div class="pv-main">
@@ -383,7 +410,7 @@
 
 <div class="scrim" data-scrim hidden></div>
 <aside data-lenis-prevent class="panel menu-panel" data-menu-panel role="dialog" aria-modal="true" aria-label="Menu" hidden>
-  <button class="close" type="button" data-close>Fechar</button>
+  <button class="close" type="button" data-close><span class="close-label">Fechar</span><span class="x" aria-hidden="true"></span></button>
   <ul class="menu-list">
     <li><a href="#colecao" data-menu-link data-jump="todas">Coleção</a></li>
     <li><a href="#colecao" data-menu-link data-jump="calca">Calças</a></li>
@@ -395,15 +422,20 @@
   <p class="menu-foot">Envio gratuito para todo o Brasil.<br><a href="mailto:comercial@vincenzosaggio.com">comercial@vincenzosaggio.com</a></p>
 </aside>
 
-<aside data-lenis-prevent class="panel bag-panel" data-bag-panel role="dialog" aria-modal="true" aria-labelledby="bag-title" hidden>
-  <button class="close" type="button" data-close>Fechar</button>
-  <h2 id="bag-title" class="bag-title">Sacola</h2>
-  <ul class="bag-list" data-bag-list></ul>
-  <div class="bag-pair" data-bag-pair hidden></div>
+<aside class="panel bag-panel" data-bag-panel role="dialog" aria-modal="true" aria-labelledby="bag-title" hidden>
+  <div class="bag-head">
+    <h2 id="bag-title" class="bag-title">Sacola <span class="bag-head-count" data-bag-head-count></span></h2>
+    <button class="close" type="button" data-close><span class="close-label">Fechar</span><span class="x" aria-hidden="true"></span></button>
+  </div>
+  <p class="bag-ship-bar">Envio gratuito para todo o Brasil</p>
+  <div class="bag-body" data-lenis-prevent>
+    <ul class="bag-list" data-bag-list></ul>
+    <div class="bag-pair" data-bag-pair hidden></div>
+  </div>
   <div class="bag-foot" data-bag-foot>
     <p class="bag-total"><span>Subtotal</span><span data-bag-total></span></p>
-    <p class="bag-ship">Envio gratuito para todo o Brasil.</p>
-    <button class="btn btn-block" type="button" data-checkout>Finalizar compra</button>
+    <p class="bag-ship">Frete grátis. Cartão de crédito ou PIX.</p>
+    <button class="btn btn-block" type="button" data-checkout><span class="btn-label">Finalizar compra</span></button>
     <p class="bag-note">O pagamento é feito na loja oficial, em vincenzosaggio.com, com a sua sacola já montada.</p>
   </div>
 </aside>

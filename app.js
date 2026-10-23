@@ -175,6 +175,153 @@ const MOTION = !matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (MOTION) document.documentElement.classList.add('motion');
 const lenis = MOTION && window.Lenis ? new Lenis({ lerp: 0.1, wheelMultiplier: 0.9 }) : null;
 
+// ---------- Abertura ----------
+// O <head> liga a classe "intro" na primeira visita da sessão. A marca aparece
+// grande, as letras viram janelas para o hero e a câmera entra pela haste do I.
+// Qualquer gesto acelera a entrada, como na Flanar.
+const root = document.documentElement;
+if (root.classList.contains('intro')) {
+  try { sessionStorage.setItem('vs-intro', '1'); } catch { /* sem armazenamento: toca de novo na próxima visita */ }
+  lenis?.stop();
+  const veil = $('.intro-veil');
+  const svg = $('.intro-svg', veil);
+  const marca = $('.intro-marca', veil);
+  const furo = $('.intro-furo', veil);
+  const cortina = $('.intro-cortina', veil);
+  const linha = $('.intro-linha', veil);
+  const t0 = performance.now();
+
+  const ease = {
+    out: p => 1 - (1 - p) ** 4,
+    inOut: p => (p < 0.5 ? 4 * p ** 3 : 1 - (-2 * p + 2) ** 3 / 2),
+    zoom: p => (p === 0 ? 0 : 2 ** (10 * p - 10)),
+  };
+  // valor, de, para, começo (s), duração (s), curva
+  const passos = [
+    ['cortina', 0, 1, 0.15, 1.1, ease.inOut],
+    ['subida', 1, 0, 0.1, 1.3, ease.out],
+    ['linha', 0, 1, 0.75, 0.9, ease.out],
+    ['furo', 0, 1, 1.7, 0.35, ease.out],
+    ['marca', 1, 0, 1.8, 0.35, ease.out],
+    ['zoom', 1, 140, 1.95, 1.3, ease.zoom],
+    ['centro', 0, 1, 1.95, 0.9, ease.inOut],
+  ];
+  const FIM = 3.25;
+  const ABRIR = 1.95;
+  const v = { cortina: 0, subida: 1, linha: 0, furo: 0, marca: 1, zoom: 1, centro: 0 };
+  let w = 0;
+  let h = 0;
+  let fs = 0;
+  let foco = { x: 0, y: 0 };
+
+  // Distância (em em) do começo do I até o centro da haste, medida desenhando a
+  // letra num canvas e procurando a faixa de tinta na altura do meio da letra
+  let haste = null;
+  const hasteDoI = () => {
+    if (haste !== null) return haste;
+    const tam = 200;
+    const c = document.createElement('canvas');
+    c.width = tam;
+    c.height = tam;
+    const ctx = c.getContext('2d');
+    ctx.font = `500 ${tam}px "Bodoni Moda"`;
+    ctx.fillText('I', 0, tam * 0.9);
+    const linhaPx = ctx.getImageData(0, Math.round(tam * 0.9 - tam * 0.34), tam, 1).data;
+    let ini = -1;
+    let fimPx = -1;
+    for (let x = 0; x < tam; x++) {
+      if (linhaPx[x * 4 + 3] > 128) { if (ini < 0) ini = x; fimPx = x; }
+    }
+    haste = ini < 0 ? 0.2 : (ini + fimPx) / 2 / tam;
+    return haste;
+  };
+
+  const medir = () => {
+    w = innerWidth;
+    h = innerHeight;
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    fs = Math.min((w * 0.86) / 5.6, h * 0.22);
+    $$('text', veil).forEach(t => {
+      t.setAttribute('x', w / 2);
+      t.setAttribute('font-size', fs);
+      t.setAttribute('y', t.classList.contains('intro-l1') ? h / 2 - fs * 0.08 : h / 2 + fs * 0.8);
+    });
+    // O foco do zoom fica no meio da haste do I, onde a letra é cheia
+    try {
+      const inicio = $('.intro-l1', marca).getStartPositionOfChar(1);
+      foco = { x: inicio.x + hasteDoI() * fs, y: inicio.y - fs * 0.34 };
+    } catch { foco = { x: w / 2, y: h / 2 }; }
+  };
+
+  const aplicar = () => {
+    const dy = v.subida * fs * 0.35;
+    // Enquanto a câmera entra, a haste do I desliza até o meio da tela
+    const cx = foco.x + (w / 2 - foco.x) * v.centro;
+    const cy = foco.y + (h / 2 - foco.y) * v.centro;
+    const t = `translate(${cx} ${cy}) scale(${v.zoom}) translate(${-foco.x} ${-foco.y + dy})`;
+    marca.setAttribute('transform', t);
+    furo.setAttribute('transform', t);
+    marca.setAttribute('opacity', v.marca);
+    furo.setAttribute('opacity', v.furo);
+    cortina.setAttribute('width', w * v.cortina);
+    const meio = (Math.min(w * 0.3, 220) * v.linha) / 2;
+    const y = h / 2 + fs * 1.15;
+    linha.setAttribute('x1', w / 2 - meio);
+    linha.setAttribute('x2', w / 2 + meio);
+    linha.setAttribute('y1', y);
+    linha.setAttribute('y2', y);
+    linha.style.opacity = 0.55 * v.marca;
+  };
+
+  let velocidade = 1;
+  let tempo = 0;
+  let ultimo = 0;
+  let acabou = false;
+  const fim = () => {
+    if (acabou) return;
+    acabou = true;
+    root.classList.add('intro-open', 'intro-done');
+    lenis?.start();
+  };
+  const quadro = agora => {
+    if (acabou) return;
+    tempo += ((agora - ultimo) / 1000) * velocidade;
+    ultimo = agora;
+    passos.forEach(([k, de, para, ini, dur, curva]) => {
+      const p = Math.min(Math.max((tempo - ini) / dur, 0), 1);
+      v[k] = de + (para - de) * curva(p);
+    });
+    aplicar();
+    if (tempo >= ABRIR) root.classList.add('intro-open');
+    if (tempo >= FIM) { fim(); return; }
+    requestAnimationFrame(quadro);
+  };
+
+  // O hero só começa a se montar quando a câmera termina de entrar
+  const ajustarHero = () => {
+    const decorrido = (performance.now() - t0) / 1000;
+    root.style.setProperty('--intro-delay', `${(decorrido + (FIM - tempo) / velocidade - 0.25).toFixed(2)}s`);
+  };
+
+  const pressa = () => {
+    if (velocidade > 1 || acabou) return;
+    velocidade = 3.5;
+    ajustarHero();
+  };
+  ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(ev => addEventListener(ev, pressa, { once: true, passive: true }));
+  addEventListener('resize', () => { medir(); aplicar(); });
+
+  // Espera a Bodoni carregar para medir as letras (no máximo 1,2 s)
+  Promise.race([document.fonts.load('500 100px "Bodoni Moda"'), new Promise(r => setTimeout(r, 1200))]).then(() => {
+    medir();
+    aplicar();
+    ajustarHero();
+    ultimo = performance.now();
+    requestAnimationFrame(quadro);
+  });
+  setTimeout(fim, 8000);
+}
+
 // Transição entre estados: a foto de origem recebe o nome "peca" antes da troca e a
 // foto de destino recebe o mesmo nome depois, e o navegador anima uma até a outra.
 const VT = MOTION && typeof document.startViewTransition === 'function';
@@ -246,8 +393,22 @@ function setFilter(f) {
     if (!li.hidden) shown += 1;
   });
   grid.dataset.filter = f;
+  movePill();
   $('[data-count]').textContent = `${shown} ${shown === 1 ? 'peça' : 'peças'}`;
 }
+const pill = document.createElement('span');
+pill.className = 'filter-pill';
+pill.setAttribute('aria-hidden', 'true');
+$('.filters').prepend(pill);
+function movePill() {
+  const on = $('.filters .is-on');
+  if (!on) return;
+  pill.style.width = `${on.offsetWidth}px`;
+  pill.style.translate = `${on.offsetLeft}px 0`;
+}
+addEventListener('resize', movePill);
+document.fonts?.ready.then(movePill);
+
 // Ao filtrar, cada card desliza para o novo lugar em vez de pular
 function animateFilter(f) {
   if (!VT) { setFilter(f); return; }
@@ -283,6 +444,8 @@ function open(panel) {
   panel.hidden = false;
   if (MOTION) enter(panel, scrim);
   openPanel = panel;
+  $('[data-open-menu]').setAttribute('aria-expanded', panel === menuPanel);
+  $$('[data-open-bag]').forEach(b => b.setAttribute('aria-expanded', panel === bagPanel));
   document.body.classList.add('is-locked');
   lenis?.stop();
   $('[data-close]', panel).focus({ preventScroll: true });
@@ -291,6 +454,7 @@ function close(restore = true, instant = false) {
   const panel = openPanel;
   if (!panel) return;
   openPanel = null;
+  $$('[data-open-menu], [data-open-bag]').forEach(b => b.setAttribute('aria-expanded', 'false'));
   if (!view.hidden) { $('[data-close]', panel).blur(); }
   else { document.body.classList.remove('is-locked'); lenis?.start(); }
   if (restore && lastFocus) lastFocus.focus({ preventScroll: true });
@@ -511,14 +675,35 @@ function addToBag(id, size) {
   });
 }
 
+const BAG_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 8.6V6.8a3.4 3.4 0 0 1 6.8 0v1.8"/><path d="M4.9 8.6h14.2l-1.1 12.2H6z"/></svg>';
+
+// Faz um número trocar com um pequeno movimento, só quando o valor muda
+function setTicking(el, text) {
+  if (el.textContent === text) return;
+  el.textContent = text;
+  el.classList.remove('tick');
+  void el.offsetWidth;
+  el.classList.add('tick');
+}
+
 function renderBag() {
   const count = bag.reduce((n, i) => n + i.qty, 0);
-  $$('[data-bag-count]').forEach(el => { el.textContent = count; });
+  $$('[data-bag-count]').forEach(el => {
+    el.textContent = count;
+    el.classList.toggle('is-empty', count === 0);
+  });
+  $$('[data-open-bag]').forEach(b => b.setAttribute('aria-label', count ? `Abrir sacola, ${count} ${count === 1 ? 'peça' : 'peças'}` : 'Abrir sacola, vazia'));
+  $('[data-bag-head-count]').textContent = count ? `(${count})` : '';
   const list = $('[data-bag-list]');
   const foot = $('[data-bag-foot]');
   renderPair();
   if (!bag.length) {
-    list.innerHTML = `<li class="bag-empty">Sua sacola está vazia.<br><a href="#colecao" data-close-link>Ver a coleção</a></li>`;
+    list.innerHTML = `<li class="bag-empty">
+      ${BAG_SVG}
+      <p>Sua sacola está vazia</p>
+      <span>As peças que você escolher aparecem aqui, com o tamanho e o total.</span>
+      <a class="btn" href="#colecao" data-jump="todas" data-close-link>Ver a coleção</a>
+    </li>`;
     foot.hidden = true;
     return;
   }
@@ -526,23 +711,27 @@ function renderBag() {
   list.innerHTML = bag.map((i, idx) => {
     const p = byId(i.id);
     return `<li style="--i:${idx}">
-      <img src="${cdn(p.gallery[0].f, 200)}" alt="" width="84" height="126">
-      <div>
-        <a class="bag-item-name" href="#peca-${p.id}" data-product="${p.id}">${p.name}</a>
-        <div class="bag-item-sub">${p.color}, tamanho ${i.size}</div>
-        <div class="bag-qty">
-          <button type="button" data-dec="${idx}" aria-label="Diminuir quantidade de ${p.name} ${p.color}">−</button>
-          <span aria-live="polite">${i.qty}</span>
-          <button type="button" data-inc="${idx}" aria-label="Aumentar quantidade de ${p.name} ${p.color}">+</button>
+      <a class="bag-thumb" href="#peca-${p.id}" data-product="${p.id}" tabindex="-1" aria-hidden="true">
+        <img src="${cdn(p.gallery[0].f, 240)}" alt="" width="96" height="144">
+      </a>
+      <div class="bag-info">
+        <div class="bag-line">
+          <a class="bag-item-name" href="#peca-${p.id}" data-product="${p.id}">${p.name}</a>
+          <span class="bag-price">${brl(p.price * i.qty)}</span>
         </div>
-      </div>
-      <div class="bag-item-end">
-        <div>${brl(p.price * i.qty)}</div>
-        <button class="bag-remove" type="button" data-remove="${idx}">Remover</button>
+        <div class="bag-item-sub">${p.color}, tamanho ${i.size}</div>
+        <div class="bag-actions">
+          <div class="bag-qty">
+            <button type="button" data-dec="${idx}" aria-label="Diminuir quantidade de ${p.name} ${p.color}">−</button>
+            <output data-qty="${idx}" aria-live="polite">${i.qty}</output>
+            <button type="button" data-inc="${idx}" aria-label="Aumentar quantidade de ${p.name} ${p.color}">+</button>
+          </div>
+          <button class="bag-remove" type="button" data-remove="${idx}">Remover</button>
+        </div>
       </div>
     </li>`;
   }).join('');
-  $('[data-bag-total]').textContent = brl(bag.reduce((t, i) => t + byId(i.id).price * i.qty, 0));
+  setTicking($('[data-bag-total]'), brl(bag.reduce((t, i) => t + byId(i.id).price * i.qty, 0)));
 }
 
 // Camisa e calça andam juntas: se a sacola só tem um dos dois, sugere o outro
@@ -564,24 +753,43 @@ function renderPair() {
 }
 
 $('[data-bag-list]').addEventListener('click', e => {
-  const t = e.target;
-  if (t.matches('[data-close-link]')) { close(false); closeProduct(); return; }
+  if (e.target.closest('[data-close-link]')) { close(false); closeProduct(); return; }
+  const t = e.target.closest('[data-inc], [data-dec], [data-remove]');
+  if (!t) return;
   const idx = Number(t.dataset.inc ?? t.dataset.dec ?? t.dataset.remove);
-  if (Number.isNaN(idx)) return;
   if ('inc' in t.dataset) bag[idx].qty += 1;
   if ('dec' in t.dataset) bag[idx].qty -= 1;
   const removed = 'remove' in t.dataset || bag[idx].qty < 1;
-  if (removed) bag.splice(idx, 1);
-  saveBag();
-  renderBag();
-  if (removed) $('[data-close]', bagPanel).focus();
+  if (!removed) {
+    saveBag();
+    renderBag();
+    $(`[data-qty="${idx}"]`)?.classList.add('tick');
+    $(`[data-${'inc' in t.dataset ? 'inc' : 'dec'}="${idx}"]`)?.focus();
+    return;
+  }
+  // A peça removida desliza para fora antes de a lista se refazer
+  const li = t.closest('li');
+  const finish = () => {
+    bag.splice(idx, 1);
+    saveBag();
+    renderBag();
+    $('[data-close]', bagPanel).focus();
+  };
+  if (!MOTION) { finish(); return; }
+  li.classList.add('is-removing');
+  setTimeout(finish, 320);
 });
 
 $$('[data-open-bag]').forEach(b => b.addEventListener('click', () => open(bagPanel)));
 $('[data-open-menu]').addEventListener('click', () => open(menuPanel));
 $$('[data-menu-link]').forEach(a => a.addEventListener('click', () => close(false)));
 // O carrinho da Shopify aceita a sacola inteira no endereço: /cart/ID:QTD,ID:QTD
-$('[data-checkout]').addEventListener('click', () => {
+$('[data-checkout]').addEventListener('click', e => {
+  const btn = e.currentTarget;
+  btn.classList.add('is-busy');
+  $('.btn-label', btn).textContent = 'Abrindo o checkout';
+  // Se a pessoa voltar do checkout pelo botão voltar, o botão volta ao normal
+  addEventListener('pageshow', () => { btn.classList.remove('is-busy'); $('.btn-label', btn).textContent = 'Finalizar compra'; }, { once: true });
   const items = bag.map(i => `${byId(i.id).variants[i.size]}:${i.qty}`).join(',');
   location.href = `https://vincenzosaggio.com/cart/${items}`;
 });
