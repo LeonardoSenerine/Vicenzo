@@ -1,5 +1,4 @@
 // Catálogo da coleção Acervo, conforme vincenzosaggio.com (outubro de 2026).
-// Fotos, medidas, estoque e textos vêm da loja oficial; nada aqui é inventado.
 // `soldOut` lista os tamanhos esgotados; `variants` são os IDs de cada tamanho na
 // Shopify da loja oficial, usados para montar o carrinho no checkout.
 
@@ -176,6 +175,33 @@ const MOTION = !matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (MOTION) document.documentElement.classList.add('motion');
 const lenis = MOTION && window.Lenis ? new Lenis({ lerp: 0.1, wheelMultiplier: 0.9 }) : null;
 
+// Transição entre estados: a foto de origem recebe o nome "peca" antes da troca e a
+// foto de destino recebe o mesmo nome depois, e o navegador anima uma até a outra.
+const VT = MOTION && typeof document.startViewTransition === 'function';
+let morphing = false;
+const onScreen = el => {
+  const r = el.getBoundingClientRect();
+  return r.width > 0 && r.bottom > 0 && r.top < innerHeight;
+};
+function morph(from, update, getTarget) {
+  if (!VT) { update(); return; }
+  let target = null;
+  if (from && onScreen(from)) from.style.viewTransitionName = 'peca';
+  morphing = true;
+  const t = document.startViewTransition(() => {
+    if (from) from.style.viewTransitionName = '';
+    update();
+    target = getTarget?.();
+    if (target) target.style.viewTransitionName = 'peca';
+  });
+  t.finished.finally(() => {
+    morphing = false;
+    if (target) target.style.viewTransitionName = '';
+  });
+}
+// A foto que está à vista no card (a de trás aparece no hover)
+const cardImg = link => [...link.querySelectorAll('img')].reverse().find(i => getComputedStyle(i).opacity === '1') || link.querySelector('img');
+
 // ---------- Coleção ----------
 const grid = $('[data-grid]');
 
@@ -222,7 +248,15 @@ function setFilter(f) {
   grid.dataset.filter = f;
   $('[data-count]').textContent = `${shown} ${shown === 1 ? 'peça' : 'peças'}`;
 }
-$$('[data-filter]').forEach(btn => btn.addEventListener('click', () => setFilter(btn.dataset.filter)));
+// Ao filtrar, cada card desliza para o novo lugar em vez de pular
+function animateFilter(f) {
+  if (!VT) { setFilter(f); return; }
+  const items = $$('li', grid);
+  items.forEach((li, i) => { li.style.viewTransitionName = `card-${i}`; });
+  document.startViewTransition(() => setFilter(f)).finished
+    .finally(() => items.forEach(li => { li.style.viewTransitionName = ''; }));
+}
+$$('[data-filter]').forEach(btn => btn.addEventListener('click', () => animateFilter(btn.dataset.filter)));
 // Itens do menu e links de categoria já chegam na coleção filtrada
 $$('[data-jump]').forEach(a => a.addEventListener('click', () => setFilter(a.dataset.jump)));
 setFilter('todas');
@@ -363,14 +397,14 @@ function showProduct(id, { push = true } = {}) {
   if (!wasOpen) {
     viewFrom = document.activeElement;
     view.hidden = false;
-    if (MOTION) enter(view);
+    if (MOTION && !morphing) enter(view);
     document.body.classList.add('is-locked');
     lenis?.stop();
   }
   view.scrollTop = 0;
   $('[data-pv-gallery]').scrollLeft = 0;
   $('[data-pv-title]').focus({ preventScroll: true });
-  document.title = `${p.name}, ${p.color} · Vincenzo Saggio`;
+  document.title = `${p.name} (${p.color}) – Vincenzo Saggio`;
   const hash = PIECE + id;
   if (location.hash !== hash) history[push && !wasOpen ? 'pushState' : 'replaceState'](null, '', hash);
 }
@@ -378,9 +412,13 @@ function showProduct(id, { push = true } = {}) {
 function closeProduct({ fromHistory = false } = {}) {
   if (view.hidden) return;
   const finish = () => { view.hidden = true; view.classList.remove('is-leaving'); };
-  if (MOTION) { view.classList.add('is-leaving'); setTimeout(finish, 380); } else finish();
+  if (VT) {
+    // A foto da peça volta para o card dela na coleção, se ele estiver à vista
+    const back = $(`#colecao [data-product="${current.id}"]`);
+    morph($('.pv-shot img'), finish, () => (back ? cardImg(back) : null));
+  } else if (MOTION) { view.classList.add('is-leaving'); setTimeout(finish, 380); } else finish();
   if (!openPanel) { document.body.classList.remove('is-locked'); lenis?.start(); }
-  document.title = 'Vincenzo Saggio · Acervo';
+  document.title = 'Coleção Acervo – Vincenzo Saggio';
   if (!fromHistory && location.hash.startsWith(PIECE)) history.replaceState(null, '', location.pathname + location.search);
   viewFrom?.focus({ preventScroll: true });
 }
@@ -390,12 +428,18 @@ document.addEventListener('click', e => {
   if (!link) return;
   e.preventDefault();
   if (openPanel) close(false, true);
-  showProduct(link.dataset.product);
+  const img = link.querySelector('img') ? cardImg(link) : null;
+  if (!img) { showProduct(link.dataset.product); return; }
+  morph(img, () => showProduct(link.dataset.product), () => $('.pv-shot img'));
 });
 $('[data-pv-close]').addEventListener('click', () => closeProduct());
 view.addEventListener('click', e => {
   const pick = e.target.closest('[data-pv-color-pick]');
-  if (pick) { e.preventDefault(); showProduct(pick.dataset.pvColorPick, { push: false }); return; }
+  if (pick) {
+    e.preventDefault();
+    morph($('.pv-shot img'), () => showProduct(pick.dataset.pvColorPick, { push: false }), () => $('.pv-shot img'));
+    return;
+  }
   if (e.target.closest('[data-pv-leave]')) closeProduct();
 });
 
@@ -481,7 +525,7 @@ function renderBag() {
   foot.hidden = false;
   list.innerHTML = bag.map((i, idx) => {
     const p = byId(i.id);
-    return `<li>
+    return `<li style="--i:${idx}">
       <img src="${cdn(p.gallery[0].f, 200)}" alt="" width="84" height="126">
       <div>
         <a class="bag-item-name" href="#peca-${p.id}" data-product="${p.id}">${p.name}</a>
@@ -677,18 +721,44 @@ $$('[data-split]').forEach(el => {
 
 $$('.menu-list a').forEach((a, i) => a.style.setProperty('--i', i));
 
-// Entradas discretas: cada bloco aparece uma vez, quando chega à tela
+// Entradas na rolagem: cada bloco aparece uma vez, quando chega à tela.
+// Títulos sobem de trás de uma máscara; textos e fotos vizinhos entram em sequência.
+$$('.title-lg, .marca-title, .spread-text h3, .pv-pairs h3').forEach(el => { el.dataset.rise = ''; el.classList.add('is-mask'); });
+$$('.colecao-intro, .colecao-tools, .looks-sub, .monte-sub, .spread-text p, .spread-text .link-arrow, .marca-lead, .marca-text > p:last-child, .servico > div, .news, .foot-cols > div')
+  .forEach(el => { el.dataset.rise = ''; });
+const stagger = (els, step) => {
+  const byParent = new Map();
+  els.forEach(el => {
+    if (el.style.getPropertyValue('--d')) return;
+    const list = byParent.get(el.parentElement) || [];
+    list.push(el);
+    byParent.set(el.parentElement, list);
+  });
+  byParent.forEach(list => list.forEach((el, i) => el.style.setProperty('--d', `${i * step}ms`)));
+};
+stagger($$('[data-rise]'), 90);
+stagger($$('.entre > [data-reveal], .filme > [data-reveal]'), 120);
+// Na grade, o atraso segue a coluna, para cada linha entrar da esquerda para a direita
+$$('.grid > li').forEach((li, i) => li.querySelector('[data-reveal]')?.style.setProperty('--d', `${(i % 4) * 90}ms`));
+
 if (MOTION) {
+  // Um título recortado pela máscara nunca conta como visível, então quem é
+  // observado é o bloco em volta dele.
+  const watched = new Map();
+  $$('[data-split], [data-reveal], [data-rise]').forEach(el => {
+    const box = el.classList.contains('is-mask') ? el.parentElement : el;
+    watched.set(box, [...(watched.get(box) || []), el]);
+  });
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (!e.isIntersecting) return;
-      e.target.classList.add('is-in');
+      watched.get(e.target).forEach(el => el.classList.add('is-in'));
       io.unobserve(e.target);
     });
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-  $$('[data-split], [data-reveal]').forEach(el => io.observe(el));
+  watched.forEach((_, box) => io.observe(box));
 } else {
-  $$('[data-split], [data-reveal]').forEach(el => el.classList.add('is-in'));
+  $$('[data-split], [data-reveal], [data-rise]').forEach(el => el.classList.add('is-in'));
 }
 
 // Âncoras rolam com a mesma inércia, parando abaixo do cabeçalho
@@ -706,8 +776,9 @@ document.addEventListener('click', e => {
   if (id !== '#') history.replaceState(null, '', id);
 });
 
-// Cabeçalho some ao descer e volta ao subir
+// Cabeçalho some ao descer e volta ao subir; a foto da abertura desce mais devagar
 const header = $('.top');
+const heroImg = $('.hero-media img');
 let lastY = window.scrollY;
 function frame(time) {
   lenis?.raf(time);
@@ -716,6 +787,7 @@ function frame(time) {
     header.classList.toggle('is-hidden', y > lastY && y > 400 && !openPanel);
     lastY = y;
   }
+  if (MOTION && y < innerHeight * 1.2) heroImg.style.setProperty('--hy', `${(y * 0.1).toFixed(1)}px`);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
