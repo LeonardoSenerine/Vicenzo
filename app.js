@@ -1,5 +1,6 @@
 // Catálogo da coleção Acervo, conforme vincenzosaggio.com (outubro de 2026).
-// `soldOut` lista os tamanhos esgotados.
+// `soldOut` lista os tamanhos esgotados; `variants` são os IDs de cada tamanho na
+// Shopify da loja oficial, usados para montar o carrinho no checkout.
 const CALCA_DESC = [
   'Cintura alta, pregas duplas e modelagem ampla.',
   'Tecido 100% lã fria Paramount, Super 120’s, que traz leveza, fluidez e toque refinado.',
@@ -23,6 +24,8 @@ const PRODUCTS = [
     desc: CALCA_DESC,
     sizes: ['36', '38', '40', '42', '44', '46'],
     soldOut: ['36', '46'],
+    swatch: '#A67D5E',
+    variants: { 36: 54662028722451, 38: 54662028755219, 40: 54662028787987, 42: 54662028820755, 44: 54662028853523, 46: 54662028886291 },
   },
   {
     id: 'calca-cinza-chumbo',
@@ -34,6 +37,8 @@ const PRODUCTS = [
     desc: CALCA_DESC,
     sizes: ['36', '38', '40', '42', '44', '46'],
     soldOut: ['36', '38', '40', '46'],
+    swatch: '#3D3B3C',
+    variants: { 36: 54662026461459, 38: 54662026494227, 40: 54662026526995, 42: 54662026559763, 44: 54662026592531, 46: 54662026625299 },
   },
   {
     id: 'calca-marrom',
@@ -45,6 +50,8 @@ const PRODUCTS = [
     desc: CALCA_DESC,
     sizes: ['36', '38', '40', '42', '44', '46'],
     soldOut: ['36', '38', '40', '46'],
+    swatch: '#4E362B',
+    variants: { 36: 54661600608531, 38: 54661600641299, 40: 54661600674067, 42: 54661600706835, 44: 54661600739603, 46: 54661600772371 },
   },
   {
     id: 'camisa-branca',
@@ -56,6 +63,8 @@ const PRODUCTS = [
     desc: CAMISA_DESC,
     sizes: ['P', 'M', 'G'],
     soldOut: [],
+    swatch: '#F7F4EF',
+    variants: { P: 54661796659475, M: 54661865079059, G: 54661865111827 },
   },
   {
     id: 'camisa-listrada',
@@ -67,6 +76,8 @@ const PRODUCTS = [
     desc: CAMISA_DESC,
     sizes: ['P', 'M', 'G'],
     soldOut: [],
+    swatch: 'repeating-linear-gradient(90deg, #F2F0EC 0 3px, #8C98B0 3px 4px)',
+    variants: { P: 54662040486163, M: 54662040518931, G: 54662040551699 },
   },
 ];
 
@@ -146,6 +157,7 @@ function close(restore = true, instant = false) {
   const panel = openPanel;
   if (!panel) return;
   openPanel = null;
+  if (panel === productPanel && location.hash.startsWith(PIECE)) history.replaceState(null, '', location.pathname);
   document.body.classList.remove('is-locked');
   lenis?.start();
   if (restore && lastFocus) lastFocus.focus({ preventScroll: true });
@@ -186,6 +198,7 @@ function showProduct(id) {
       : `<button type="button" data-size="${s}" aria-pressed="false">${s}</button>`).join('');
   open(productPanel);
   productPanel.scrollTop = 0;
+  history.replaceState(null, '', PIECE + id);
 }
 
 grid.addEventListener('click', e => {
@@ -207,9 +220,18 @@ $('[data-pp-add]').addEventListener('click', () => {
     return;
   }
   addToBag(current.id, chosenSize);
-  close();
-  toast(`${current.name} ${current.color}, tamanho ${chosenSize}, adicionada à sacola`);
+  // A sacola abre na hora: quem acabou de escolher vê a peça lá dentro e o que combina com ela
+  open(bagPanel);
+  toast(`${current.name} ${current.color}, tamanho ${chosenSize}, na sacola`);
 });
+
+// Cada peça tem um endereço próprio (#peca-calca-camelo) para ser mandada a alguém
+const PIECE = '#peca-';
+const openFromHash = () => {
+  const id = location.hash.startsWith(PIECE) && location.hash.slice(PIECE.length);
+  if (id && byId(id)) showProduct(id);
+};
+window.addEventListener('hashchange', openFromHash);
 
 // ---------- Sacola ----------
 function loadBag() {
@@ -236,8 +258,9 @@ function renderBag() {
   $('[data-bag-count]').textContent = count;
   const list = $('[data-bag-list]');
   const foot = $('[data-bag-foot]');
+  renderPair();
   if (!bag.length) {
-    list.innerHTML = `<li class="bag-empty" style="display:block">Sua sacola está vazia.<br><a href="#colecao" data-close-link>Ver a coleção</a></li>`;
+    list.innerHTML = `<li class="bag-empty" style="display:block">Nada aqui ainda. Sem pressa.<br><a href="#colecao" data-close-link>Ver a coleção</a></li>`;
     foot.hidden = true;
     return;
   }
@@ -264,6 +287,28 @@ function renderBag() {
   $('[data-bag-total]').textContent = brl(bag.reduce((t, i) => t + byId(i.id).price * i.qty, 0));
 }
 
+// Camisa e calça andam juntas: se a sacola só tem um dos dois, sugere o outro
+const PAIR_HINT = { calca: 'Vai bem com esta calça:', camisa: 'Vai bem com esta camisa:' };
+function renderPair() {
+  const box = $('[data-bag-pair]');
+  const types = new Set(bag.map(i => byId(i.id).type));
+  if (types.size !== 1) { box.hidden = true; return; }
+  const [has] = types;
+  const p = PRODUCTS.find(x => x.type !== has && x.sizes.length > x.soldOut.length);
+  box.hidden = false;
+  box.innerHTML = `
+    <p class="legenda">${PAIR_HINT[has]}</p>
+    <button type="button" class="bag-pair-card" data-pair="${p.id}">
+      <img src="${p.images[0]}" alt="">
+      <span><span class="bag-item-name">${p.name}</span><span class="bag-item-sub">${p.color}</span><span>${brl(p.price)}</span></span>
+      <span class="bag-pair-cta">Ver</span>
+    </button>`;
+}
+$('[data-bag-pair]').addEventListener('click', e => {
+  const b = e.target.closest('[data-pair]');
+  if (b) showProduct(b.dataset.pair);
+});
+
 $('[data-bag-list]').addEventListener('click', e => {
   const t = e.target;
   if (t.matches('[data-close-link]')) { close(false); return; }
@@ -280,7 +325,73 @@ $('[data-bag-list]').addEventListener('click', e => {
 document.querySelectorAll('[data-open-bag]').forEach(b => b.addEventListener('click', () => open(bagPanel)));
 $('[data-open-menu]').addEventListener('click', () => open($('[data-menu-panel]')));
 document.querySelectorAll('[data-menu-link]').forEach(a => a.addEventListener('click', () => close(false)));
-$('[data-checkout]').addEventListener('click', () => toast('O pagamento ainda não está conectado nesta prévia.'));
+// O carrinho da Shopify aceita a sacola inteira no endereço: /cart/ID:QTD,ID:QTD
+$('[data-checkout]').addEventListener('click', () => {
+  const items = bag.map(i => `${byId(i.id).variants[i.size]}:${i.qty}`).join(',');
+  location.href = `https://vincenzosaggio.com/cart/${items}`;
+});
+
+// ---------- Monte o look ----------
+// Para cada peça, a foto em que ela aparece inteira: a camisa mostra o recorte de cima, a calça o de baixo
+const LOOK_IMG = {
+  'camisa-branca': 'assets/img/11.jpg',
+  'camisa-listrada': 'assets/img/4.jpg',
+  'calca-camelo': 'assets/img/11.jpg',
+  'calca-cinza-chumbo': 'assets/img/9.jpg',
+  'calca-marrom': 'assets/img/10.jpg',
+};
+const look = { camisa: { id: 'camisa-branca', size: null }, calca: { id: 'calca-camelo', size: null } };
+
+function renderLook() {
+  ['camisa', 'calca'].forEach(type => {
+    const group = $(`[data-look-group="${type}"]`);
+    const pick = look[type];
+    const p = byId(pick.id);
+    $('[data-look-swatches]', group).innerHTML = PRODUCTS.filter(x => x.type === type).map(x => `
+      <button type="button" class="swatch" data-look-pick="${x.id}" aria-pressed="${x.id === pick.id}"
+        aria-label="${x.color}" style="--sw:${x.swatch}"></button>`).join('');
+    $('[data-look-name]', group).textContent = `${p.color}, ${brl(p.price)}`;
+    $('[data-look-sizes]', group).innerHTML = p.sizes.map(s => p.soldOut.includes(s)
+      ? `<button type="button" disabled aria-label="${s}, esgotado">${s}</button>`
+      : `<button type="button" data-look-size="${s}" aria-pressed="${s === pick.size}">${s}</button>`).join('');
+    const img = $(`[data-look-img="${type}"]`);
+    if (img.getAttribute('src') !== LOOK_IMG[p.id]) {
+      img.classList.remove('is-swap');
+      void img.offsetWidth;
+      img.src = LOOK_IMG[p.id];
+      img.classList.add('is-swap');
+    }
+  });
+  $('[data-look-total]').textContent = brl(byId(look.camisa.id).price + byId(look.calca.id).price);
+}
+
+document.querySelectorAll('[data-look-group]').forEach(group => {
+  const type = group.dataset.lookGroup;
+  group.addEventListener('click', e => {
+    const pick = e.target.closest('[data-look-pick]');
+    const size = e.target.closest('[data-look-size]');
+    if (pick) look[type] = { id: pick.dataset.lookPick, size: null };
+    else if (size) look[type].size = size.dataset.lookSize;
+    else return;
+    $('[data-look-error]').textContent = '';
+    renderLook();
+  });
+});
+
+$('[data-look-add]').addEventListener('click', () => {
+  const missing = ['camisa', 'calca'].filter(t => !look[t].size);
+  if (missing.length) {
+    $('[data-look-error]').textContent = missing.length === 2
+      ? 'Escolha o tamanho da camisa e da calça.'
+      : `Falta o tamanho da ${missing[0] === 'camisa' ? 'camisa' : 'calça'}.`;
+    return;
+  }
+  addToBag(look.camisa.id, look.camisa.size);
+  addToBag(look.calca.id, look.calca.size);
+  open(bagPanel);
+  toast('O look está na sacola');
+});
+renderLook();
 
 // ---------- Newsletter ----------
 $('[data-news]').addEventListener('submit', e => {
@@ -305,6 +416,7 @@ if (!MOTION) {
 }
 
 renderBag();
+openFromHash();
 
 // ---------- Aviso de armazenamento ----------
 // Só armazenamento estritamente necessário (a sacola), então o aviso informa e não bloqueia.

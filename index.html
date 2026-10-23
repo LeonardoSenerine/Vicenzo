@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://vicenzosaggio.vercel.app/">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Vincenzo Saggio">
-<meta name="theme-color" content="#FAFAF8">
+<meta name="theme-color" content="#F3EEE7">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
 <meta property="og:type" content="website">
@@ -68,6 +68,7 @@
   </section>
 
   <section class="intro">
+    <p class="legenda">O clássico não precisa ser tão rígido:</p>
     <p>A coleção nasce da ideia de construir um guarda-roupa que permaneça. A partir dos fundamentos do vestir masculino, camisa e calça, o Acervo traz proporções amplas, matérias-primas naturais e uma elegância menos rígida, pensada para a vida contemporânea.</p>
     <a class="serif-link" href="#colecao">Ver a coleção Acervo</a>
   </section>
@@ -97,6 +98,60 @@
     <ul class="grid" data-grid></ul>
   </section>
 
+  <!-- Camisa por cima, calça por baixo: as duas fotos se encontram na cintura -->
+  <section class="look" id="look" aria-labelledby="look-h">
+    <div class="look-head">
+      <p class="legenda">Camisa e calça, os fundamentos:</p>
+      <h2 id="look-h" class="giant" data-split>Monte o look</h2>
+      <p class="look-sub">Escolha uma de cada e veja as duas juntas antes de levar.</p>
+    </div>
+    <div class="look-body">
+      <div class="look-stage" aria-hidden="true">
+        <img class="look-top" data-look-img="camisa" alt="">
+        <img class="look-bottom" data-look-img="calca" alt="">
+      </div>
+      <div class="look-controls">
+        <fieldset class="look-group" data-look-group="camisa">
+          <legend>Camisa</legend>
+          <div class="swatches" data-look-swatches></div>
+          <p class="look-name" data-look-name></p>
+          <div class="sizes"><div data-look-sizes></div></div>
+        </fieldset>
+        <fieldset class="look-group" data-look-group="calca">
+          <legend>Calça</legend>
+          <div class="swatches" data-look-swatches></div>
+          <p class="look-name" data-look-name></p>
+          <div class="sizes"><div data-look-sizes></div></div>
+        </fieldset>
+        <p class="look-total"><span>O look</span><span data-look-total></span></p>
+        <p class="pp-error" data-look-error role="alert"></p>
+        <button class="btn" type="button" data-look-add>Levar o look</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Frases das postagens da marca, cada uma com o detalhe que ela descreve -->
+  <section class="uso" aria-labelledby="uso-h">
+    <h2 class="legenda" id="uso-h">O segredo mora também na forma de usar:</h2>
+    <ol class="uso-list">
+      <li data-reveal>
+        <img src="assets/img/4.jpg" alt="Camisa listrada com os primeiros botões abertos e um pingente dourado" loading="lazy">
+        <h3>Botões abertos</h3>
+        <p>E uma boa combinação de joias. A camisa relaxed não pede gravata.</p>
+      </li>
+      <li data-reveal>
+        <img src="assets/img/5.jpg" alt="Punho da camisa listrada dobrado, com um anel no dedo" loading="lazy">
+        <h3>As mangas dobradas</h3>
+        <p>As pregas nos punhos deixam a dobra cair do jeito certo, sem esforço.</p>
+      </li>
+      <li data-reveal>
+        <img src="assets/img/8.jpg" alt="Calça camelo de pregas dobrada sobre o taco de madeira" loading="lazy">
+        <h3>Uma boa calça</h3>
+        <p>Sustenta muito bem os códigos clássicos, mesmo quando o resto é uma camiseta ou até um tênis.</p>
+      </li>
+    </ol>
+  </section>
+
   <section class="feature" id="vicenzo" data-parallax>
     <img data-reveal src="assets/img/vicenzo/rua-pb.jpg" alt="Vicenzo de óculos escuros e blazer diante de uma fachada de pedra" loading="lazy">
     <div class="feature-copy">
@@ -110,11 +165,24 @@
       <p>Vincenzo Saggio nasce do encontro entre a sofisticação italiana e o calor da cultura brasileira. Entre o refinado e o rústico. Entre o clássico e o tropical.</p>
       <p>É a arte da sprezzatura: a elegância sem esforço, contraditória, sedutora. Não é somente uma marca de roupas. É identidade, naturalidade, a elegância reconhecida na imperfeição.</p>
     </div>
-    <div class="historia-grid">
-      <img data-reveal src="assets/img/vicenzo/rua-retrato.jpg" alt="Retrato de Vicenzo com camisa listrada e paletó cor de vinho no braço" loading="lazy">
-      <img data-reveal src="assets/img/vicenzo/gramado-poltrona.jpg" alt="Vicenzo numa poltrona de vime sobre a grama, de blazer cinza e calça de linho" loading="lazy">
-      <img data-reveal src="assets/img/vicenzo/perfil-pb.jpg" alt="Perfil de Vicenzo em sombra, mão no queixo" loading="lazy">
-      <img data-reveal src="assets/img/vicenzo/sofa-gramado-pb.jpg" alt="Vicenzo sentado num sofá chesterfield sobre a grama, em preto e branco" loading="lazy">
+    <!-- As contradições do texto, em pares: um lado em preto e branco, o outro em cor -->
+    <div class="entre">
+      <figure class="par" data-reveal>
+        <img src="assets/img/vicenzo/blazer-pb.jpg" alt="Vicenzo sentado de blazer e calça de alfaiataria, em preto e branco" loading="lazy">
+        <figcaption>O refinado</figcaption>
+      </figure>
+      <figure class="par" data-reveal>
+        <img src="assets/img/vicenzo/rua-retrato.jpg" alt="Retrato de Vicenzo na rua, com camisa listrada e paletó cor de vinho no braço" loading="lazy">
+        <figcaption>e o rústico</figcaption>
+      </figure>
+      <figure class="par" data-reveal>
+        <img src="assets/img/vicenzo/sofa-gramado-pb.jpg" alt="Vicenzo sentado num sofá chesterfield sobre a grama, em preto e branco" loading="lazy">
+        <figcaption>O clássico</figcaption>
+      </figure>
+      <figure class="par" data-reveal>
+        <img src="assets/img/vicenzo/gramado-poltrona.jpg" alt="Vicenzo numa poltrona de vime sobre a grama, de blazer cinza e calça de linho" loading="lazy">
+        <figcaption>e o tropical</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -169,6 +237,7 @@
     <li><a href="#colecao" data-menu-link data-jump="todas">Coleção Acervo</a></li>
     <li><a href="#colecao" data-menu-link data-jump="calca">Calças</a></li>
     <li><a href="#colecao" data-menu-link data-jump="camisa">Camisas</a></li>
+    <li><a href="#look" data-menu-link>Monte o look</a></li>
     <li><a href="#vicenzo" data-menu-link>Quem é Vicenzo</a></li>
   </ul>
 </aside>
@@ -185,6 +254,7 @@
       <legend>Tamanho</legend>
       <div data-pp-sizes></div>
     </fieldset>
+    <p class="pp-help">Em dúvida no tamanho? <a href="https://vincenzosaggio.com/pages/contact" rel="noopener">Fale com a gente</a></p>
     <p class="pp-error" data-pp-error role="alert"></p>
     <button class="btn" type="button" data-pp-add>Adicionar à sacola</button>
     <p class="pp-note">Envio gratuito para todo o Brasil.</p>
@@ -197,9 +267,11 @@
   <button class="close" type="button" data-close aria-label="Fechar">Fechar</button>
   <h3 id="bag-title">Sacola</h3>
   <ul class="bag-list" data-bag-list></ul>
+  <div class="bag-pair" data-bag-pair hidden></div>
   <div class="bag-foot" data-bag-foot>
     <p class="bag-total"><span>Subtotal</span><span data-bag-total></span></p>
     <button class="btn" type="button" data-checkout>Finalizar compra</button>
+    <p class="bag-note">O pagamento é feito na loja oficial, em vincenzosaggio.com, com a sua sacola já montada.</p>
   </div>
 </aside>
 
