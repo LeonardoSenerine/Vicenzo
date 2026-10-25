@@ -954,7 +954,9 @@ html.intro:not(.intro-open) .announce, html.intro:not(.intro-open) .top { opacit
   .monte-body { grid-template-columns: 1fr; }
   .look-stage { max-width: 380px; width: 86%; }
 
-  .marca-photo { grid-column: 1 / 9; margin-top: 0; }
+  /* A foto sangra de ponta a ponta: anula o respiro lateral da seção */
+  .marca-photo { grid-column: 1 / -1; margin: 0 calc(-1 * var(--pad)); }
+  .marca-photo img { aspect-ratio: 4 / 5; max-height: 88svh; }
   .marca-text { grid-column: 1 / -1; padding-top: 32px; }
   .marca-l2 { padding-right: 0; }
   .contraste { grid-template-columns: 1fr 1fr; gap: 20px var(--gap); }
