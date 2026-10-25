@@ -30,7 +30,7 @@
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { scroll-behavior: smooth; scroll-padding-top: calc(var(--top-h) + 12px); }
+html { scrollbar-gutter: stable; scroll-behavior: smooth; scroll-padding-top: calc(var(--top-h) + 12px); }
 body {
   margin: 0;
   background: var(--marfim);
@@ -51,7 +51,7 @@ body { font-weight: 450; }
 /* A Bodoni no tamanho óptico máximo tem traços quase invisíveis; um tamanho
    óptico menor e peso 500 mantêm o desenho com mais corpo e leitura. */
 .title-lg, .title-md, .hero-title, .spread-text h3, .spread-pair figcaption,
-.look-group legend, .marca-title, .marca-lead, .par figcaption, .servico h2,
+.look-group legend, .marca-title, .marca-lead, .contraste-palavras, .servico h2,
 .news label, .pv-title, .pv-facts p, .menu-list a, .bag-title, .bag-empty,
 .legal h1, .legal-body h2, .lost h1, .giant {
   font-weight: 500;
@@ -307,16 +307,27 @@ em { font-style: italic; }
 .monte-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px 48px; margin-bottom: clamp(36px, 5vw, 72px); }
 .monte-sub { color: rgba(244, 240, 232, .7); max-width: 24em; }
 .monte-body { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 5fr); gap: clamp(36px, 7vw, 120px); align-items: start; }
-.look-stage { display: grid; max-width: 460px; width: 100%; justify-self: center; }
-.look-stage img { width: 100%; object-fit: cover; background: var(--carvao-2); }
-.look-top { aspect-ratio: 3 / 2; object-position: 50% 0; translate: -3% 0; rotate: -1deg; }
-.look-bottom {
-  position: relative; aspect-ratio: 6 / 5; object-position: 50% 100%;
-  margin-top: -14%; translate: 3% 0; rotate: .8deg;
-  box-shadow: 0 -14px 26px -16px rgba(0, 0, 0, .8);
+/* Palco do look: duas fotos do mesmo estúdio, na mesma escala. A de cima mostra
+   a camisa até a cintura, a de baixo a calça a partir da cintura; cada foto é
+   posicionada pela cintura medida nela (--cintura, em larguras do palco), então
+   as duas se encontram exatamente na linha do cós. */
+.look-stage {
+  --topo: .37;
+  position: relative; container-type: inline-size;
+  width: 100%; max-width: 440px; justify-self: center;
+  aspect-ratio: 1 / 1.31;
 }
-.motion .look-stage img.is-swap { animation: swap .6s var(--out); }
-@keyframes swap { from { opacity: .3; } }
+.look-top, .look-bottom { position: absolute; left: 0; right: 0; overflow: hidden; background: var(--carvao-2); }
+.look-top { top: 0; height: calc(var(--topo) * 100cqw); rotate: -.5deg; translate: -1.2% 0; z-index: 1; }
+.look-bottom { top: calc(var(--topo) * 100cqw); bottom: 0; rotate: .35deg; translate: 1.2% 0; box-shadow: 0 -12px 22px -14px rgba(0, 0, 0, .75); z-index: 2; }
+.look-stage img { position: absolute; left: 0; width: 100%; height: auto; max-width: none; }
+.look-top img { top: calc((var(--topo) - var(--cintura, .4)) * 100cqw); }
+.look-bottom img { top: calc(var(--cintura, .4) * -100cqw); }
+/* Ao trocar, a camisa desce até a cintura e a calça sobe até ela */
+.motion .look-top img.is-swap { animation: swap-top .7s var(--out); }
+.motion .look-bottom img.is-swap { animation: swap-bottom .7s var(--out); }
+@keyframes swap-top { from { opacity: 0; translate: 0 -8%; } }
+@keyframes swap-bottom { from { opacity: 0; translate: 0 6%; } }
 .look-group { border: 0; padding: 0 0 28px; margin: 0 0 28px; border-bottom: 1px solid var(--fio-claro); }
 .look-group legend { padding: 0; margin-bottom: 14px; font-family: var(--editorial); font-size: 28px; }
 .look-name { margin: 12px 0 14px; font-size: var(--t-sm); color: rgba(244, 240, 232, .72); }
@@ -351,25 +362,59 @@ em { font-style: italic; }
   background: linear-gradient(to top right, transparent calc(50% - .5px), currentColor 50%, transparent calc(50% + .5px));
 }
 
-/* ---------- 6. A marca ---------- */
-.marca { padding: var(--sec) var(--pad); }
-.marca-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); align-items: end; }
-.marca-photo { grid-column: 1 / 7; }
+/* ---------- 6. A marca ----------
+   O texto da marca fala de encontros (o refinado e o rústico, o clássico e o
+   tropical). Cada par vira uma faixa: a foto em preto e branco de um lado, a
+   colorida do outro, e as duas se aproximam das palavras enquanto a faixa passa. */
+.marca { padding: var(--sec) var(--pad); overflow: clip; }
+.marca-title {
+  display: flex; flex-direction: column;
+  font-family: var(--editorial);
+  font-size: clamp(54px, 9.6vw, 168px); line-height: .92; letter-spacing: -.03em;
+  margin-bottom: clamp(40px, 6vw, 96px);
+}
+.marca-title .rise-in { display: flex; flex-direction: column; }
+.motion .marca-title.is-mask { margin-bottom: clamp(40px, 6vw, 96px); }
+.marca-l2 { align-self: flex-end; padding-right: 4vw; }
+.marca-abre { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); align-items: start; }
+.marca-photo { grid-column: 1 / 6; margin-top: clamp(-160px, -9vw, -40px); }
 .marca-photo img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
-.marca-text { grid-column: 8 / 13; padding-bottom: clamp(0px, 3vw, 48px); }
-.marca-title { font-family: var(--editorial); font-size: clamp(44px, 6vw, 96px); line-height: .98; letter-spacing: -.025em; margin-bottom: 32px; }
-.marca-lead { font-family: var(--editorial); font-size: clamp(21px, 1.9vw, 27px); line-height: 1.35; margin-bottom: 20px; }
-.marca-text p:not(.marca-lead) { color: var(--carvao-2); max-width: 30em; }
+.marca-text { grid-column: 7 / 12; padding-top: clamp(8px, 2vw, 32px); }
+.marca-lead {
+  font-family: var(--editorial); font-weight: 500; font-variation-settings: "opsz" 28;
+  font-size: clamp(26px, 2.6vw, 40px); line-height: 1.22; letter-spacing: -.01em;
+  margin-bottom: 28px; text-wrap: balance;
+}
+.marca-body { max-width: 30em; color: var(--carvao-2); padding-top: 24px; border-top: 1px solid var(--fio); }
 
-.entre { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); margin-top: clamp(64px, 9vw, 140px); }
-.par { position: relative; overflow: hidden; }
-.par:nth-child(even) { margin-top: clamp(24px, 5vw, 80px); }
-.par img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
-.par figcaption { margin-top: 12px; font-family: var(--editorial); font-size: clamp(20px, 1.8vw, 26px); }
-.par:nth-child(even) figcaption { font-style: italic; }
-.filme { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--gap); margin-top: clamp(64px, 9vw, 140px); align-items: end; }
-.filme video { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: var(--carvao-2); }
-.filme video:last-child { aspect-ratio: 3 / 4; }
+.contrastes { margin-top: clamp(80px, 11vw, 180px); display: grid; gap: clamp(72px, 10vw, 160px); }
+.contraste {
+  --c: 1;
+  display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 4fr) minmax(0, 4fr);
+  align-items: center; gap: var(--gap);
+}
+.contraste figure { margin: 0; }
+.contraste img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+.contraste-a { translate: calc((1 - var(--c)) * -9vw) 0; }
+.contraste-b { translate: calc((1 - var(--c)) * 9vw) 0; }
+/* Na segunda faixa as fotos ficam em alturas diferentes, para o ritmo não repetir */
+.contraste:nth-child(2) .contraste-a { margin-bottom: 18%; }
+.contraste:nth-child(2) .contraste-b { margin-top: 18%; }
+.contraste-palavras {
+  display: flex; flex-direction: column; gap: .12em;
+  font-family: var(--editorial); font-weight: 500; font-variation-settings: "opsz" 40;
+  font-size: clamp(30px, 3.9vw, 66px); line-height: 1; letter-spacing: -.02em;
+  text-align: center;
+}
+.contraste-palavras span:last-child { font-style: italic; font-weight: 400; }
+
+.filme {
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap);
+  margin-top: clamp(80px, 11vw, 180px); align-items: end;
+}
+.filme video { width: 100%; object-fit: cover; background: var(--carvao-2); }
+.filme video:first-child { grid-column: 1 / 9; aspect-ratio: 16 / 11; }
+.filme video:last-child { grid-column: 9 / 13; aspect-ratio: 3 / 4; margin-bottom: clamp(-80px, -6vw, -24px); }
 
 /* ---------- 7. Serviço ---------- */
 .servico {
@@ -461,29 +506,97 @@ em { font-style: italic; }
 .pv-label { font-size: var(--t-xs); font-weight: 500; margin-bottom: 12px; padding: 0; }
 .pv-label span { color: var(--pedra-txt); font-weight: 400; }
 .pv-stock { margin-top: 12px; font-size: 14px; color: var(--pedra-txt); }
-.pv-chart { margin-top: 16px; }
-.pv-chart summary, .pv-info summary {
+.pv-info summary {
   display: flex; justify-content: space-between; align-items: center;
   min-height: 44px; cursor: pointer; list-style: none;
   font-size: 14px; font-weight: 500;
 }
-.pv-chart summary { justify-content: flex-start; gap: 8px; text-decoration: underline; }
-.pv-chart summary::-webkit-details-marker, .pv-info summary::-webkit-details-marker { display: none; }
+.pv-info summary::-webkit-details-marker { display: none; }
 .pv-info summary::after { content: "+"; font-size: 20px; font-weight: 400; transition: rotate .3s var(--out); }
 .pv-info details[open] summary::after { rotate: 45deg; }
-.chart-scroll { overflow-x: auto; margin-top: 8px; border: 1px solid var(--fio); }
-.chart { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
-.chart th, .chart td { padding: 9px 10px; text-align: center; border-bottom: 1px solid var(--fio); white-space: nowrap; }
-.chart thead th { background: var(--carvao); color: var(--marfim); font-weight: 500; }
-.chart tbody th { text-align: left; font-weight: 500; }
-.chart tbody tr:nth-child(even) { background: var(--papel); }
-.chart-note { margin-top: 10px; font-size: var(--t-xs); color: var(--pedra-txt); }
 .pv-buy .btn-block { margin-top: 4px; }
 .pv-help { margin-top: 12px; font-size: 14px; color: var(--pedra-txt); }
 .pv-info { margin-top: 32px; border-top: 1px solid var(--fio); }
 .pv-info details { border-bottom: 1px solid var(--fio); }
 .pv-info details p { padding-bottom: 16px; font-size: var(--t-sm); color: var(--carvao-2); }
 .pv-info details p + p { margin-top: -6px; }
+
+/* Ficha de medidas: um pedido de ateliê em papel, com picote no alto, fios de
+   régua e o tamanho indicado marcado por um carimbo cor de couro. */
+.pv-medidas {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin-top: 10px;
+  background: none; border: 0; padding: 0; font-size: 14px; font-weight: 500;
+  text-decoration: underline; text-underline-offset: 4px;
+}
+.pv-medidas::before {
+  content: ""; width: 22px; height: 10px; flex: none;
+  border: 1px solid currentColor; border-top: 0;
+  background: repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 4.2px) 0 0 / 100% 5px no-repeat;
+}
+.ficha {
+  position: relative; margin-bottom: clamp(56px, 7vw, 104px);
+  padding: clamp(28px, 4vw, 52px) clamp(20px, 4vw, 56px) clamp(24px, 3vw, 40px);
+  background: var(--papel);
+  --picote: radial-gradient(circle at 50% 0, var(--marfim) 5px, transparent 5.5px) 0 0 / 18px 10px repeat-x;
+}
+.ficha::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 10px; background: var(--picote); }
+.ficha-head {
+  display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 6px 24px;
+  padding-bottom: 18px; margin-bottom: clamp(24px, 3vw, 36px);
+  border-bottom: 3px double var(--carvao);
+}
+.ficha-marca { grid-column: 1 / -1; font-family: var(--editorial); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; }
+.ficha-titulo { font-family: var(--editorial); font-weight: 500; font-variation-settings: "opsz" 40; font-size: clamp(34px, 3.8vw, 56px); line-height: 1; letter-spacing: -.02em; }
+.ficha-peca { font-size: 14px; color: var(--pedra-txt); text-align: right; }
+.ficha-corpo { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(28px, 4vw, 64px); align-items: start; }
+.ficha-rotulo-secao { font-size: var(--t-xs); font-weight: 600; margin-bottom: 10px; }
+.ficha-instrucao { font-size: var(--t-sm); color: var(--carvao-2); margin-bottom: 22px; max-width: 32em; }
+.ficha-campo { display: grid; gap: 8px; margin-bottom: 16px; font-size: 14px; font-weight: 500; }
+.ficha-input { display: flex; align-items: baseline; gap: 8px; border-bottom: 1.5px solid var(--carvao); max-width: 220px; }
+.ficha-input input {
+  width: 100%; min-width: 0; padding: 8px 0; border: 0; background: none; color: inherit;
+  font-family: var(--editorial); font-weight: 500; font-size: 34px; font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+}
+.ficha-input input::-webkit-outer-spin-button, .ficha-input input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.ficha-input input:focus { outline: none; }
+.ficha-input:focus-within { border-bottom-color: var(--couro); box-shadow: 0 1.5px 0 var(--couro); }
+.ficha-input span { font-size: 15px; color: var(--pedra-txt); }
+.ficha-resultado { margin-top: 22px; }
+.ficha-resultado:empty { display: none; }
+.ficha-diz { font-family: var(--editorial); font-size: clamp(19px, 1.6vw, 22px); line-height: 1.35; margin-bottom: 12px; }
+.ficha-diz strong { font-weight: 600; color: var(--couro); }
+.ficha-aviso { font-size: 14px; color: var(--carvao-2); margin-bottom: 12px; }
+.btn-claro { background: transparent; color: var(--carvao); }
+.btn-claro:hover { color: var(--marfim); }
+
+.ficha-scroll { overflow-x: auto; overscroll-behavior-x: contain; }
+.ficha-grade { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 14px; }
+.ficha-grade th, .ficha-grade td { padding: 12px 10px; text-align: center; white-space: nowrap; border-bottom: 1px solid rgba(29, 26, 23, .18); }
+.ficha-grade thead th { position: relative; padding-top: 22px; font-family: var(--editorial); font-weight: 500; font-size: 22px; border-bottom: 1.5px solid var(--carvao); vertical-align: bottom; }
+.ficha-grade thead th:first-child { font-family: var(--sans); font-size: var(--t-xs); font-weight: 600; text-align: left; }
+.ficha-grade tbody th { text-align: left; font-weight: 500; }
+/* O nome da medida fica preso à esquerda quando a tabela rola para o lado */
+.ficha-grade tbody th, .ficha-grade thead th:first-child { position: sticky; left: 0; z-index: 2; background: var(--papel); box-shadow: 1px 0 0 rgba(29, 26, 23, .12); }
+.ficha-grade small { display: block; font-family: var(--sans); font-size: 11px; font-weight: 500; color: var(--pedra-txt); }
+.ficha-grade .is-out { color: rgba(29, 26, 23, .38); }
+.ficha-grade tr.is-base th, .ficha-grade tr.is-base td { font-weight: 600; }
+.ficha-grade .is-rec { background: rgba(122, 46, 34, .08); color: var(--couro); }
+.ficha-grade td.is-rec { font-weight: 600; }
+.carimbo {
+  position: absolute; left: 50%; top: 4px; z-index: 1;
+  display: grid; place-items: center; width: 70px; height: 70px; margin-left: -35px;
+  border: 1.5px solid var(--couro); border-radius: 50%; outline: 1px solid var(--couro); outline-offset: -5px;
+  color: var(--couro); font-family: var(--sans); font-size: 8.5px; font-weight: 700; line-height: 1.2;
+  letter-spacing: .06em; text-transform: uppercase; text-align: center;
+  rotate: -12deg; opacity: .9; pointer-events: none;
+  animation: carimbar .55s var(--out) both;
+}
+@keyframes carimbar { from { opacity: 0; scale: 1.8; rotate: -24deg; } 60% { opacity: .95; scale: .94; } }
+.ficha-grade thead th.is-rec { padding-top: 84px; }
+.ficha-nota { margin-top: 18px; font-size: var(--t-xs); color: var(--pedra-txt); max-width: 60em; }
+[data-pv-sizes].is-flash { animation: flash 1.2s var(--ease); }
+@keyframes flash { 0%, 100% { box-shadow: 0 0 0 0 transparent; } 30% { box-shadow: 0 0 0 6px rgba(122, 46, 34, .18); } }
 
 .pv-story { padding: clamp(64px, 8vw, 120px) var(--pad); }
 .pv-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px var(--gap); padding-bottom: clamp(56px, 7vw, 104px); border-bottom: 1px solid var(--fio); }
@@ -673,13 +786,11 @@ body.is-locked { overflow: hidden; }
 .swatch[aria-pressed="true"], .swatch[aria-current="true"] { outline-offset: 3px; }
 
 /* Entrega, trocas e tabela abrem deslizando */
-.pv-info details::details-content, .pv-chart::details-content {
+.pv-info details::details-content {
   block-size: 0; overflow: clip;
   transition: block-size .45s var(--out), content-visibility .45s allow-discrete;
 }
-.pv-info details[open]::details-content, .pv-chart[open]::details-content { block-size: auto; }
-.pv-chart summary::after { content: ""; width: 7px; height: 7px; margin-left: 2px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; rotate: 45deg; translate: 0 -2px; transition: rotate .35s var(--out), translate .35s var(--out); }
-.pv-chart[open] summary::after { rotate: 225deg; translate: 0 2px; }
+.pv-info details[open]::details-content { block-size: auto; }
 
 /* Menu: o item sob o cursor avança um pouco */
 .menu-list a { display: flex; justify-content: space-between; align-items: center; }
@@ -704,26 +815,37 @@ html.lenis, html.lenis body { height: auto; }
 .motion .hero-title .line:nth-child(3) > span { animation-delay: calc(.35s + var(--intro-delay)); }
 @keyframes rise { from { transform: translateY(105%); } }
 .motion .hero-sub, .motion .hero-actions { animation: appear .9s var(--ease) calc(.55s + var(--intro-delay)) both; }
-.motion .hero-media img { animation: settle 1.6s var(--out) calc(var(--intro-delay) * .7) both; }
+.motion .hero-media img { animation: settle 1.6s var(--out) both; }
+html.intro .hero-media img { animation: none; }
 .motion .hero-caption { animation: appear .8s var(--ease) calc(1s + var(--intro-delay)) both; }
 @keyframes appear { from { opacity: 0; } }
 @keyframes settle { from { scale: 1.18; opacity: 0; } }
 
-/* Fotos: abrem como cortina, de baixo para cima, enquanto o zoom assenta */
-.motion figure[data-reveal] img,
-.motion .spread-pair[data-reveal] img,
-.motion .card[data-reveal] .card-media {
-  clip-path: inset(100% 0 0 0);
-  transition: clip-path 1.25s var(--out) var(--d, 0s), scale 1.8s var(--out) var(--d, 0s), opacity .6s var(--ease);
+/* Fotos: um véu da cor do fundo se recolhe de baixo para cima enquanto o zoom
+   assenta. Só transform e opacity, que a placa de vídeo anima sem redesenhar. */
+.motion figure[data-reveal],
+.motion .spread-pair[data-reveal] figure,
+.motion .card[data-reveal] .card-media { position: relative; overflow: clip; }
+.motion figure[data-reveal]::after,
+.motion .spread-pair[data-reveal] figure::after,
+.motion .card[data-reveal] .card-media::after {
+  content: ""; position: absolute; inset: -1px; z-index: 2; pointer-events: none;
+  background: var(--fundo-secao, var(--marfim));
+  transform-origin: 50% 0;
+  transition: transform 1.15s var(--out) var(--d, 0s);
 }
-.motion figure[data-reveal] img, .motion .spread-pair[data-reveal] img { scale: 1.14; }
-.motion figure[data-reveal], .motion .spread-pair figure { overflow: clip; }
-.motion figure[data-reveal].is-in img,
-.motion .spread-pair[data-reveal].is-in img,
-.motion .card[data-reveal].is-in .card-media { clip-path: inset(0 0 0 0); scale: 1; }
-.motion .card[data-reveal] .card-media img { scale: 1.14; transition: opacity .6s var(--ease), scale 1.8s var(--out) var(--d, 0s); }
-.motion .card[data-reveal].is-in .card-media img { scale: 1; }
+.motion figure[data-reveal].is-in::after,
+.motion .spread-pair[data-reveal].is-in figure::after,
+.motion .card[data-reveal].is-in .card-media::after { transform: scaleY(0); }
+.motion .spread-pair[data-reveal] figure:last-child::after { transition-delay: calc(var(--d, 0s) + .12s); }
+.motion figure[data-reveal] img, .motion .spread-pair[data-reveal] img, .motion .card[data-reveal] .card-media img {
+  scale: 1.12;
+  transition: scale 1.6s var(--out) var(--d, 0s), opacity .6s var(--ease);
+}
+.motion figure[data-reveal].is-in img, .motion .spread-pair[data-reveal].is-in img, .motion .card[data-reveal].is-in .card-media img { scale: 1; }
 .motion .card[data-reveal].is-in:hover .card-media img { scale: 1.04; transition-delay: 0s; }
+.motion figure[data-reveal] figcaption { position: relative; z-index: 3; }
+.detalhes { --fundo-secao: var(--papel); }
 .motion .card .card-meta, .motion figure[data-reveal] figcaption {
   opacity: 0; translate: 0 10px;
   transition: opacity .8s var(--ease), translate 1s var(--out);
@@ -739,12 +861,10 @@ html.lenis, html.lenis body { height: auto; }
   transition: opacity 1s var(--ease) var(--d, 0s), translate 1.2s var(--out) var(--d, 0s);
 }
 .motion [data-rise].is-in { opacity: 1; translate: none; }
-.motion [data-rise].is-mask {
-  opacity: 1; translate: 0 .5em;
-  clip-path: inset(-.2em 0 100% 0);
-  transition: clip-path 1.2s var(--out) var(--d, 0s), translate 1.2s var(--out) var(--d, 0s);
-}
-.motion [data-rise].is-mask.is-in { clip-path: inset(-.2em 0 -.3em 0); translate: none; }
+.motion [data-rise].is-mask { opacity: 1; translate: none; overflow: clip; padding-bottom: .1em; margin-bottom: -.1em; }
+.rise-in { display: block; }
+.motion [data-rise].is-mask .rise-in { translate: 0 108%; transition: translate 1.15s var(--out) var(--d, 0s); }
+.motion [data-rise].is-mask.is-in .rise-in { translate: none; }
 
 /* Foto da abertura desce mais devagar que a página */
 .motion .hero-media img { translate: 0 var(--hy, 0px); scale: 1.08; }
@@ -772,9 +892,8 @@ html.lenis, html.lenis body { height: auto; }
 :root { --intro-delay: 0s; }
 html.intro { --intro-delay: 3s; }
 .intro-veil { display: none; }
-html.intro .intro-veil { position: fixed; inset: 0; z-index: 200; display: block; cursor: pointer; }
+html.intro .intro-veil { position: fixed; inset: 0; z-index: 200; display: block; cursor: pointer; touch-action: none; }
 html.intro.intro-done .intro-veil { display: none; }
-html.intro:not(.intro-done), html.intro:not(.intro-done) body { overflow: hidden; }
 .intro-svg { display: block; width: 100%; height: 100%; }
 .intro-fundo { fill: var(--carvao); }
 .intro-marca { fill: var(--marfim); }
@@ -797,6 +916,7 @@ html.intro:not(.intro-open) .announce, html.intro:not(.intro-open) .top { opacit
   .grid-pairs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .foot-top { grid-template-columns: 1fr; }
   .pv-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ficha-corpo { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 900px) {
@@ -821,10 +941,17 @@ html.intro:not(.intro-open) .announce, html.intro:not(.intro-open) .top { opacit
   .monte-body { grid-template-columns: 1fr; }
   .look-stage { max-width: 380px; width: 86%; }
 
-  .marca-photo, .marca-text { grid-column: 1 / -1; }
-  .marca-text { padding-top: 24px; }
-  .entre { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .filme { grid-template-columns: 1fr; }
+  .marca-photo { grid-column: 1 / 9; margin-top: 0; }
+  .marca-text { grid-column: 1 / -1; padding-top: 32px; }
+  .marca-l2 { padding-right: 0; }
+  .contraste { grid-template-columns: 1fr 1fr; gap: 20px var(--gap); }
+  .contraste-palavras { grid-column: 1 / -1; grid-row: 1; font-size: clamp(34px, 9vw, 60px); }
+  .contraste-a { translate: calc((1 - var(--c)) * -14vw) 0; }
+  .contraste-b { translate: calc((1 - var(--c)) * 14vw) 0; margin-top: 18%; }
+  .contraste:nth-child(2) .contraste-a { margin-bottom: 0; }
+  .contraste:nth-child(2) .contraste-b { margin-top: 18%; }
+  .filme video:first-child { grid-column: 1 / -1; }
+  .filme video:last-child { grid-column: 6 / -1; margin: 0; }
   .servico { grid-template-columns: 1fr; gap: 28px; }
 
   /* Produto: fotos deslizam de lado, compra logo abaixo */
@@ -866,6 +993,9 @@ html.intro:not(.intro-open) .announce, html.intro:not(.intro-open) .top { opacit
   .detalhes-head { margin-bottom: 40px; }
   .foot-cols { grid-template-columns: 1fr 1fr; }
   .pv-facts { grid-template-columns: 1fr; }
+  .ficha-head { grid-template-columns: 1fr; }
+  .ficha-peca { text-align: left; }
+  .ficha-grade th, .ficha-grade td { padding: 11px 8px; }
   .top-sub .only-lg-sub { display: none; }
   .lost { grid-template-columns: 1fr; }
   .lost > img { height: 46svh; }

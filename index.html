@@ -214,8 +214,8 @@
     </div>
     <div class="monte-body">
       <div class="look-stage" aria-hidden="true">
-        <img class="look-top" data-look-img="camisa" alt="">
-        <img class="look-bottom" data-look-img="calca" alt="">
+        <div class="look-top"><img data-look-img="camisa" alt=""></div>
+        <div class="look-bottom"><img data-look-img="calca" alt=""></div>
       </div>
       <div class="look-controls">
         <fieldset class="look-group" data-look-group="camisa">
@@ -238,34 +238,39 @@
   </section>
 
   <section class="marca" id="marca" aria-labelledby="marca-h">
-    <div class="marca-grid">
+    <h2 id="marca-h" class="marca-title"><span class="marca-l1">A arte da</span> <span class="marca-l2">sprezzatura.</span></h2>
+
+    <div class="marca-abre">
       <figure class="marca-photo" data-reveal>
         <img src="assets/img/vicenzo/rua-pb.jpg" alt="Vincenzo de óculos escuros e blazer diante de uma fachada de pedra, em preto e branco" loading="lazy" width="1500" height="2000">
       </figure>
       <div class="marca-text">
-        <h2 id="marca-h" class="marca-title">A arte da sprezzatura.</h2>
         <p class="marca-lead">Vincenzo Saggio nasce do encontro entre a sofisticação italiana e o calor da cultura brasileira.</p>
-        <p>A elegância sem esforço, contraditória, sedutora. Não é somente uma marca de roupas. É identidade, naturalidade, a elegância reconhecida na imperfeição.</p>
+        <p class="marca-body">A elegância sem esforço, contraditória, sedutora. Não é somente uma marca de roupas. É identidade, naturalidade, a elegância reconhecida na imperfeição.</p>
       </div>
     </div>
-    <div class="entre">
-      <figure class="par" data-reveal>
-        <img src="assets/img/vicenzo/blazer-pb.jpg" alt="Vincenzo sentado de blazer e calça de alfaiataria, em preto e branco" loading="lazy" width="1500" height="2000">
-        <figcaption>O refinado</figcaption>
-      </figure>
-      <figure class="par" data-reveal>
-        <img src="assets/img/vicenzo/rua-retrato.jpg" alt="Retrato de Vincenzo na rua, com camisa listrada e paletó cor de vinho no braço" loading="lazy" width="1440" height="1920">
-        <figcaption>e o rústico.</figcaption>
-      </figure>
-      <figure class="par" data-reveal>
-        <img src="assets/img/vicenzo/sofa-gramado-pb.jpg" alt="Vincenzo sentado num sofá chesterfield sobre a grama, em preto e branco" loading="lazy" width="1496" height="1995">
-        <figcaption>O clássico</figcaption>
-      </figure>
-      <figure class="par" data-reveal>
-        <img src="assets/img/vicenzo/gramado-poltrona.jpg" alt="Vincenzo numa poltrona de vime sobre a grama, de blazer cinza e calça de linho" loading="lazy" width="1496" height="1995">
-        <figcaption>e o tropical.</figcaption>
-      </figure>
+
+    <div class="contrastes">
+      <div class="contraste" data-encontro>
+        <figure class="contraste-a" data-reveal>
+          <img src="assets/img/vicenzo/blazer-pb.jpg" alt="Vincenzo sentado de blazer e calça de alfaiataria, em preto e branco" loading="lazy" width="1500" height="2000">
+        </figure>
+        <p class="contraste-palavras"><span>O refinado</span> <span>e o rústico.</span></p>
+        <figure class="contraste-b" data-reveal>
+          <img src="assets/img/vicenzo/rua-retrato.jpg" alt="Retrato de Vincenzo na rua, com camisa listrada e paletó cor de vinho no braço" loading="lazy" width="1440" height="1920">
+        </figure>
+      </div>
+      <div class="contraste" data-encontro>
+        <figure class="contraste-a" data-reveal>
+          <img src="assets/img/vicenzo/sofa-gramado-pb.jpg" alt="Vincenzo sentado num sofá chesterfield sobre a grama, em preto e branco" loading="lazy" width="1496" height="1995">
+        </figure>
+        <p class="contraste-palavras"><span>O clássico</span> <span>e o tropical.</span></p>
+        <figure class="contraste-b" data-reveal>
+          <img src="assets/img/vicenzo/gramado-poltrona.jpg" alt="Vincenzo numa poltrona de vime sobre a grama, de blazer cinza e calça de linho" loading="lazy" width="1496" height="1995">
+        </figure>
+      </div>
     </div>
+
     <div class="filme">
       <video data-reveal src="assets/video/acervo.mp4" poster="assets/img/3.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Filme da coleção Acervo"></video>
       <video data-reveal src="assets/video/vicenzo-gramado.mp4" poster="assets/img/vicenzo/gramado-sapatos.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Vincenzo num evento ao ar livre"></video>
@@ -366,10 +371,7 @@
       </fieldset>
       <p class="pv-stock" data-pv-stock></p>
 
-      <details class="pv-chart" data-pv-chart-box>
-        <summary>Tabela de medidas</summary>
-        <div data-pv-chart></div>
-      </details>
+      <button class="pv-medidas" type="button" data-ficha-ir>Encontre seu tamanho pela medida</button>
 
       <p class="error" data-pv-error role="alert"></p>
       <button class="btn btn-block" type="button" data-pv-add>Adicionar à sacola</button>
@@ -390,6 +392,28 @@
   </div>
 
   <div class="pv-story">
+    <section class="ficha" id="ficha" aria-labelledby="ficha-h">
+      <header class="ficha-head">
+        <p class="ficha-marca">Vincenzo Saggio</p>
+        <h3 id="ficha-h" class="ficha-titulo">Ficha de medidas</h3>
+        <p class="ficha-peca" data-ficha-peca></p>
+      </header>
+      <div class="ficha-corpo">
+        <form class="ficha-ajuda" data-ficha-form novalidate>
+          <p class="ficha-rotulo-secao">Encontre seu tamanho</p>
+          <p class="ficha-instrucao" data-ficha-instrucao></p>
+          <label class="ficha-campo">
+            <span data-ficha-rotulo></span>
+            <span class="ficha-input"><input type="number" inputmode="decimal" step="0.5" data-ficha-input><span aria-hidden="true">cm</span></span>
+          </label>
+          <button class="btn" type="submit">Ver meu tamanho</button>
+          <div class="ficha-resultado" data-ficha-resultado role="status" aria-live="polite"></div>
+        </form>
+        <div class="ficha-tabela" data-ficha-tabela></div>
+      </div>
+      <p class="ficha-nota" data-ficha-nota></p>
+    </section>
+
     <div class="pv-facts">
       <div><h3>Modelagem</h3><p data-pv-fit></p></div>
       <div><h3>Material</h3><p><span data-pv-material></span> <span data-pv-material-note></span></p></div>

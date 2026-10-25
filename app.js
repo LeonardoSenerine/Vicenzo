@@ -182,6 +182,11 @@ const lenis = MOTION && window.Lenis ? new Lenis({ lerp: 0.1, wheelMultiplier: 0
 const root = document.documentElement;
 if (root.classList.contains('intro')) {
   try { sessionStorage.setItem('vs-intro', '1'); } catch { /* sem armazenamento: toca de novo na próxima visita */ }
+  // A câmera entra no hero: a página precisa estar no topo, mesmo que o navegador
+  // queira devolver a rolagem de uma visita anterior
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  scrollTo(0, 0);
+  lenis?.scrollTo(0, { immediate: true, force: true });
   lenis?.stop();
   const veil = $('.intro-veil');
   const svg = $('.intro-svg', veil);
@@ -194,7 +199,7 @@ if (root.classList.contains('intro')) {
   const ease = {
     out: p => 1 - (1 - p) ** 4,
     inOut: p => (p < 0.5 ? 4 * p ** 3 : 1 - (-2 * p + 2) ** 3 / 2),
-    zoom: p => (p === 0 ? 0 : 2 ** (10 * p - 10)),
+    in: p => p ** 3,
   };
   // valor, de, para, começo (s), duração (s), curva
   const passos = [
@@ -203,12 +208,19 @@ if (root.classList.contains('intro')) {
     ['linha', 0, 1, 0.75, 0.9, ease.out],
     ['furo', 0, 1, 1.7, 0.35, ease.out],
     ['marca', 1, 0, 1.8, 0.35, ease.out],
-    ['zoom', 1, 140, 1.95, 1.3, ease.zoom],
-    ['centro', 0, 1, 1.95, 0.9, ease.inOut],
+    ['zoom', 0, 1, 1.95, 1.45, ease.inOut],
+    ['centro', 0, 1, 1.95, 1.0, ease.inOut],
+    ['veu', 1, 0, 2.85, 0.55, ease.inOut],
+    ['foto', 0, 1, 1.75, 1.65, ease.out],
   ];
-  const FIM = 3.25;
-  const ABRIR = 1.95;
-  const v = { cortina: 0, subida: 1, linha: 0, furo: 0, marca: 1, zoom: 1, centro: 0 };
+  const FIM = 3.4;
+  const ABRIR = 2.1;
+  const ZOOM_MAX = 60;
+  const v = { cortina: 0, subida: 1, linha: 0, furo: 0, marca: 1, zoom: 0, centro: 0, veu: 1, foto: 0 };
+  // A foto do hero chega um pouco ampliada e assenta junto com o zoom, terminando
+  // exatamente na escala que ela tem depois da abertura (sem salto no fim)
+  const heroFoto = $('.hero-media img');
+  const fotoFinal = matchMedia('(max-width: 900px)').matches ? 1 : 1.08;
   let w = 0;
   let h = 0;
   let fs = 0;
@@ -258,7 +270,8 @@ if (root.classList.contains('intro')) {
     // Enquanto a câmera entra, a haste do I desliza até o meio da tela
     const cx = foco.x + (w / 2 - foco.x) * v.centro;
     const cy = foco.y + (h / 2 - foco.y) * v.centro;
-    const t = `translate(${cx} ${cy}) scale(${v.zoom}) translate(${-foco.x} ${-foco.y + dy})`;
+    const z = ZOOM_MAX ** v.zoom;
+    const t = `translate(${cx} ${cy}) scale(${z}) translate(${-foco.x} ${-foco.y + dy})`;
     marca.setAttribute('transform', t);
     furo.setAttribute('transform', t);
     marca.setAttribute('opacity', v.marca);
@@ -271,22 +284,31 @@ if (root.classList.contains('intro')) {
     linha.setAttribute('y1', y);
     linha.setAttribute('y2', y);
     linha.style.opacity = 0.55 * v.marca;
+    veil.style.opacity = v.veu;
+    heroFoto.style.scale = fotoFinal + 0.16 * (1 - v.foto);
   };
 
   let velocidade = 1;
+  let alvo = 1;
   let tempo = 0;
   let ultimo = 0;
   let acabou = false;
   const fim = () => {
     if (acabou) return;
     acabou = true;
+    heroFoto.style.scale = '';
     root.classList.add('intro-open', 'intro-done');
     lenis?.start();
   };
   const quadro = agora => {
     if (acabou) return;
-    tempo += ((agora - ultimo) / 1000) * velocidade;
+    // Passo limitado só contra saltos grandes (aba que volta do segundo plano);
+    // um aparelho lento perde quadros, mas a abertura mantém a duração
+    const dt = Math.min((agora - ultimo) / 1000, 0.1);
     ultimo = agora;
+    // A pressa cresce aos poucos, sem tranco na velocidade
+    velocidade += (alvo - velocidade) * Math.min(1, dt * 7);
+    tempo += dt * velocidade;
     passos.forEach(([k, de, para, ini, dur, curva]) => {
       const p = Math.min(Math.max((tempo - ini) / dur, 0), 1);
       v[k] = de + (para - de) * curva(p);
@@ -300,12 +322,13 @@ if (root.classList.contains('intro')) {
   // O hero só começa a se montar quando a câmera termina de entrar
   const ajustarHero = () => {
     const decorrido = (performance.now() - t0) / 1000;
-    root.style.setProperty('--intro-delay', `${(decorrido + (FIM - tempo) / velocidade - 0.25).toFixed(2)}s`);
+    root.style.setProperty('--intro-delay', `${(decorrido + (FIM - tempo) / Math.max(alvo, 1) - 0.6).toFixed(2)}s`);
   };
 
   const pressa = () => {
-    if (velocidade > 1 || acabou) return;
-    velocidade = 3.5;
+    if (alvo > 1 || acabou) return;
+    alvo = 3;
+    velocidade = 1.4;
     ajustarHero();
   };
   ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(ev => addEventListener(ev, pressa, { once: true, passive: true }));
@@ -488,19 +511,120 @@ let current = null;
 let chosenSize = null;
 let viewFrom = null;
 
-function chartHTML(type) {
-  const c = CHARTS[type];
-  return `
-    <div class="chart-scroll" tabindex="0" role="region" aria-label="Tabela de medidas, ${c.title}">
-      <table class="chart">
-        <caption class="sr-only">Tabela de medidas, ${c.title}, em centímetros</caption>
-        <thead><tr><th scope="col">Medida</th>${c.cols.map(s => `<th scope="col">${s}</th>`).join('')}</tr></thead>
-        <tbody>${c.rows.map(([label, ...v]) =>
-          `<tr><th scope="row">${label}</th>${v.map(n => `<td>${n} cm</td>`).join('')}</tr>`).join('')}</tbody>
+// ---------- Ficha de medidas ----------
+// A tabela oficial vira uma ficha de ateliê. A ajuda compara a medida de uma peça
+// que a pessoa já tem com a mesma medida da tabela e marca o tamanho mais próximo;
+// nada além da tabela oficial entra na conta.
+const AJUDA = {
+  calca: {
+    linha: 0,
+    rotulo: 'Cintura da sua calça',
+    instrucao: 'Pegue uma calça sua que vista bem. Feche, deite sobre a mesa e meça a cintura de uma ponta à outra. Dobre o valor: essa é a circunferência, a mesma medida da tabela.',
+    faixa: [55, 130],
+  },
+  camisa: {
+    linha: 2,
+    rotulo: 'Axila a axila da sua camisa',
+    instrucao: 'Pegue uma camisa sua que vista bem. Abotoe, deite sobre a mesa e meça de uma axila à outra, sem esticar o tecido.',
+    faixa: [40, 80],
+  },
+};
+let fichaRec = null;
+
+function renderFicha({ medida = null } = {}) {
+  const p = current;
+  const c = CHARTS[p.type];
+  const a = AJUDA[p.type];
+  $('[data-ficha-peca]').textContent = `${p.name}, ${p.color.toLowerCase()}`;
+  $('[data-ficha-instrucao]').textContent = a.instrucao;
+  $('[data-ficha-rotulo]').textContent = a.rotulo;
+  $('[data-ficha-nota]').textContent = c.note;
+  const tabela = $('[data-ficha-tabela]');
+  tabela.innerHTML = `
+    <div class="ficha-scroll" tabindex="0" role="region" aria-label="Tabela de medidas, ${c.title}">
+      <table class="ficha-grade">
+        <caption class="sr-only">Tabela de medidas, ${c.title}, em centímetros${fichaRec ? `; tamanho indicado ${fichaRec}` : ''}</caption>
+        <thead><tr><th scope="col">Medida</th>${c.cols.map((col, i) => {
+          const tam = p.sizes[i];
+          const cls = [tam === fichaRec ? 'is-rec' : '', p.soldOut.includes(tam) ? 'is-out' : ''].join(' ').trim();
+          return `<th scope="col" class="${cls}">${col}${p.soldOut.includes(tam) ? '<small>esgotado</small>' : ''}${tam === fichaRec ? '<span class="carimbo" aria-hidden="true">Seu<br>tamanho</span>' : ''}</th>`;
+        }).join('')}</tr></thead>
+        <tbody>${c.rows.map(([label, ...v], r) =>
+          `<tr class="${r === a.linha ? 'is-base' : ''}"><th scope="row">${label}</th>${v.map((n, i) =>
+            `<td class="${p.sizes[i] === fichaRec ? 'is-rec' : ''}${p.soldOut.includes(p.sizes[i]) ? ' is-out' : ''}">${n} cm</td>`).join('')}</tr>`).join('')}</tbody>
       </table>
-    </div>
-    <p class="chart-note">${c.note}</p>`;
+    </div>`;
+  if (medida === null) {
+    $('[data-ficha-resultado]').innerHTML = '';
+    $('[data-ficha-input]').value = '';
+  }
 }
+
+function sugerirTamanho(medida) {
+  const p = current;
+  const c = CHARTS[p.type];
+  const a = AJUDA[p.type];
+  const valores = c.rows[a.linha].slice(1);
+  const out = $('[data-ficha-resultado]');
+  if (!Number.isFinite(medida) || medida < a.faixa[0] || medida > a.faixa[1]) {
+    fichaRec = null;
+    renderFicha({ medida });
+    out.innerHTML = `<p class="ficha-aviso">Digite a medida em centímetros, entre ${a.faixa[0]} e ${a.faixa[1]}.</p>`;
+    return;
+  }
+  // Mais próximo pela tabela; no empate, o maior
+  const perto = i => Math.abs(valores[i] - medida);
+  const ordem = valores.map((_, i) => i).sort((x, y) => perto(x) - perto(y) || y - x);
+  const melhor = ordem[0];
+  const tamanho = p.sizes[melhor];
+  const dif = Math.round(Math.abs(valores[melhor] - medida) * 10) / 10;
+  const medidaTxt = String(medida).replace('.', ',');
+  const rotuloLinha = c.rows[a.linha][0].toLowerCase();
+  fichaRec = tamanho;
+  renderFicha({ medida });
+  // Se a tabela rola para o lado (celular), leva o tamanho indicado para a vista
+  const grade = $('.ficha-scroll');
+  const marcado = $('thead th.is-rec', grade);
+  if (marcado && grade.scrollWidth > grade.clientWidth) {
+    const fixa = $('thead th', grade).offsetWidth;
+    grade.scrollTo({ left: marcado.offsetLeft - fixa - 12, behavior: MOTION ? 'smooth' : 'auto' });
+  }
+
+  const fora = medida < valores[0] - 3 || medida > valores.at(-1) + 3;
+  let html = `<p class="ficha-diz">Pela tabela, o seu tamanho é o <strong>${tamanho}</strong>: ${rotuloLinha} de ${valores[melhor]} cm, ${dif === 0 ? 'igual à sua medida' : `a ${String(dif).replace('.', ',')} cm da sua medida de ${medidaTxt} cm`}.</p>`;
+  if (fora) html += `<p class="ficha-aviso">Sua medida fica fora da grade da peça. Antes de comprar, <a href="mailto:comercial@vincenzosaggio.com">escreva para a gente</a>.</p>`;
+  if (p.soldOut.includes(tamanho)) {
+    const alt = ordem.map(i => p.sizes[i]).find(t => !p.soldOut.includes(t));
+    const iAlt = p.sizes.indexOf(alt);
+    html += alt
+      ? `<p class="ficha-aviso">O ${tamanho} está esgotado nesta cor. O mais próximo disponível é o ${alt}, com ${valores[iAlt]} cm.</p><button class="btn btn-claro" type="button" data-ficha-escolher="${alt}">Escolher o ${alt}</button>`
+      : `<p class="ficha-aviso">Esta cor está esgotada em todos os tamanhos.</p>`;
+  } else {
+    html += `<button class="btn btn-claro" type="button" data-ficha-escolher="${tamanho}">Escolher o ${tamanho}</button>`;
+  }
+  out.innerHTML = html;
+}
+
+$('[data-ficha-form]').addEventListener('submit', e => {
+  e.preventDefault();
+  sugerirTamanho(parseFloat(String($('[data-ficha-input]').value).replace(',', '.')));
+});
+$('[data-ficha-resultado]').addEventListener('click', e => {
+  const b = e.target.closest('[data-ficha-escolher]');
+  if (!b) return;
+  // Seleciona o tamanho na área de compra e leva a pessoa até ela
+  $(`[data-pv-sizes] [data-size="${b.dataset.fichaEscolher}"]`)?.click();
+  const alvo = $('[data-pv-sizes]');
+  view.scrollTo({ top: view.scrollTop + alvo.getBoundingClientRect().top - innerHeight / 3, behavior: MOTION ? 'smooth' : 'auto' });
+  alvo.classList.remove('is-flash');
+  void alvo.offsetWidth;
+  alvo.classList.add('is-flash');
+});
+$('[data-ficha-ir]').addEventListener('click', () => {
+  const ficha = $('#ficha');
+  view.scrollTo({ top: view.scrollTop + ficha.getBoundingClientRect().top - 80, behavior: MOTION ? 'smooth' : 'auto' });
+  setTimeout(() => $('[data-ficha-input]').focus({ preventScroll: true }), MOTION ? 700 : 0);
+});
 
 function renderProduct() {
   const p = current;
@@ -528,8 +652,8 @@ function renderProduct() {
     ? `Últimos tamanhos disponíveis: ${listPt(left)}.`
     : `Disponível nos tamanhos ${listPt(left)}.`;
   $('[data-pv-error]').textContent = '';
-  $('[data-pv-chart]').innerHTML = chartHTML(p.type);
-  $('[data-pv-chart-box]').open = false;
+  fichaRec = null;
+  renderFicha();
 
   $('[data-pv-gallery]').innerHTML = p.gallery.map((g, i) => `
     <figure class="pv-shot${g.wide ? ' is-wide' : ''}">
@@ -795,13 +919,15 @@ $('[data-checkout]').addEventListener('click', e => {
 });
 
 // ---------- Monte o look ----------
-// Para cada peça, a foto em que ela aparece inteira: a camisa mostra o recorte de cima, a calça o de baixo
+// Para cada peça, uma foto de frente do mesmo estúdio e a altura da cintura nela
+// (fração da altura da foto). Altura/largura da foto converte a cintura para a
+// unidade do palco, que é a largura dele.
 const LOOK_IMG = {
-  'camisa-branca': 'assets/img/11.jpg',
-  'camisa-listrada': 'assets/img/4.jpg',
-  'calca-camelo': 'assets/img/11.jpg',
-  'calca-cinza-chumbo': 'assets/img/9.jpg',
-  'calca-marrom': 'assets/img/10.jpg',
+  'camisa-branca': { src: 'assets/img/11.jpg', cintura: 0.285, proporcao: 4 / 3 },
+  'camisa-listrada': { src: 'assets/img/look-listrada.jpg', cintura: 0.31, proporcao: 3 / 2 },
+  'calca-camelo': { src: 'assets/img/11.jpg', cintura: 0.285, proporcao: 4 / 3 },
+  'calca-cinza-chumbo': { src: 'assets/img/9.jpg', cintura: 0.30, proporcao: 4 / 3 },
+  'calca-marrom': { src: 'assets/img/10.jpg', cintura: 0.29, proporcao: 4 / 3 },
 };
 const look = { camisa: { id: 'camisa-branca', size: null }, calca: { id: 'calca-camelo', size: null } };
 
@@ -818,10 +944,12 @@ function renderLook() {
       ? `<button type="button" disabled aria-label="${s}, esgotado">${s}</button>`
       : `<button type="button" data-look-size="${s}" aria-pressed="${s === pick.size}">${s}</button>`).join('');
     const img = $(`[data-look-img="${type}"]`);
-    if (img.getAttribute('src') !== LOOK_IMG[p.id]) {
+    const foto = LOOK_IMG[p.id];
+    if (img.getAttribute('src') !== foto.src) {
       img.classList.remove('is-swap');
       void img.offsetWidth;
-      img.src = LOOK_IMG[p.id];
+      img.src = foto.src;
+      img.style.setProperty('--cintura', (foto.cintura * foto.proporcao).toFixed(4));
       img.classList.add('is-swap');
     }
   });
@@ -931,8 +1059,12 @@ $$('.menu-list a').forEach((a, i) => a.style.setProperty('--i', i));
 
 // Entradas na rolagem: cada bloco aparece uma vez, quando chega à tela.
 // Títulos sobem de trás de uma máscara; textos e fotos vizinhos entram em sequência.
-$$('.title-lg, .marca-title, .spread-text h3, .pv-pairs h3').forEach(el => { el.dataset.rise = ''; el.classList.add('is-mask'); });
-$$('.colecao-intro, .colecao-tools, .looks-sub, .monte-sub, .spread-text p, .spread-text .link-arrow, .marca-lead, .marca-text > p:last-child, .servico > div, .news, .foot-cols > div')
+$$('.title-lg, .marca-title, .spread-text h3, .pv-pairs h3').forEach(el => {
+  el.dataset.rise = '';
+  el.classList.add('is-mask');
+  el.innerHTML = `<span class="rise-in">${el.innerHTML}</span>`;
+});
+$$('.colecao-intro, .colecao-tools, .looks-sub, .monte-sub, .spread-text p, .spread-text .link-arrow, .marca-lead, .marca-body, .contraste-palavras, .servico > div, .news, .foot-cols > div')
   .forEach(el => { el.dataset.rise = ''; });
 const stagger = (els, step) => {
   const byParent = new Map();
@@ -945,7 +1077,7 @@ const stagger = (els, step) => {
   byParent.forEach(list => list.forEach((el, i) => el.style.setProperty('--d', `${i * step}ms`)));
 };
 stagger($$('[data-rise]'), 90);
-stagger($$('.entre > [data-reveal], .filme > [data-reveal]'), 120);
+stagger($$('.contraste > [data-reveal], .filme > [data-reveal]'), 140);
 // Na grade, o atraso segue a coluna, para cada linha entrar da esquerda para a direita
 $$('.grid > li').forEach((li, i) => li.querySelector('[data-reveal]')?.style.setProperty('--d', `${(i % 4) * 90}ms`));
 
@@ -987,6 +1119,7 @@ document.addEventListener('click', e => {
 // Cabeçalho some ao descer e volta ao subir; a foto da abertura desce mais devagar
 const header = $('.top');
 const heroImg = $('.hero-media img');
+const encontros = $$('[data-encontro]');
 let lastY = window.scrollY;
 function frame(time) {
   lenis?.raf(time);
@@ -996,6 +1129,13 @@ function frame(time) {
     lastY = y;
   }
   if (MOTION && y < innerHeight * 1.2) heroImg.style.setProperty('--hy', `${(y * 0.1).toFixed(1)}px`);
+  if (MOTION) encontros.forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.bottom < -100 || r.top > innerHeight + 100) return;
+    // 0 quando a faixa entra pela base da tela, 1 quando o meio dela chega ao meio da tela
+    const c = Math.min(Math.max((innerHeight - r.top) / (innerHeight / 2 + r.height / 2), 0), 1);
+    el.style.setProperty('--c', (1 - (1 - c) ** 3).toFixed(3));
+  });
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
