@@ -31,7 +31,7 @@ const CHARTS = {
     cols: ['36', '38', '40', '42', '44', '46'],
     rows: [
       ['Cintura (circunferência)', 75, 79, 83, 88, 91, 95],
-      ['Quadril', 51, 53, 56, 58, 59, 61],
+      ['Quadril (medida plana)', 51, 53, 56, 58, 59, 61],
       ['Comprimento', 108, 110, 112, 113, 114, 115],
     ],
     note: 'Medidas da peça em superfície plana. A circunferência da cintura foi calculada a partir da medida plana. Podem ocorrer pequenas variações de até 1 cm.',

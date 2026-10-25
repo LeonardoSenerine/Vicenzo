@@ -439,7 +439,7 @@ em { font-style: italic; }
 .foot-cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px var(--gap); }
 .foot h3 { font-size: var(--t-xs); font-weight: 500; color: rgba(244, 240, 232, .58); margin-bottom: 14px; }
 .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14px; }
-.foot ul a { text-decoration: none; overflow-wrap: anywhere; }
+.foot ul a { text-decoration: none; }
 .foot ul a:hover { text-decoration: underline; }
 .foot-pay { font-size: 14px; color: rgba(244, 240, 232, .8); }
 /* A marca empilhada como na etiqueta: VINCENZO de ponta a ponta, SAGGIO alinhado à direita.
@@ -933,11 +933,14 @@ html.intro:not(.intro-open) .announce, html.intro:not(.intro-open) .top { opacit
   .hero { grid-template-columns: 1fr; min-height: 0; }
   .hero-media { order: -1; background: none; }
   .motion .hero-media img { translate: none; scale: 1; }
-  .hero-media img { position: static; height: min(58svh, 560px); object-position: 30% 15%; }
-  .hero-caption { position: static; max-width: none; background: none; padding: 12px var(--pad) 0; display: flex; flex-wrap: wrap; gap: 4px 16px; }
-  .hero-caption span { width: 100%; margin: 0; }
-  .hero-copy { padding-top: 28px; gap: 0; }
-  .hero-title { margin-top: 18px; font-size: clamp(42px, 11vw, 72px); }
+  /* A foto cede o espaço que falta para título e botão caberem na primeira tela */
+  .hero-media img { position: static; height: max(220px, min(calc(100svh - 460px), 520px)); object-position: 30% 15%; }
+  .hero-caption { position: static; max-width: none; background: none; padding: 10px var(--pad) 0; display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 13px; }
+  .hero-caption span { display: none; }
+  .hero-copy { padding-top: 18px; padding-bottom: 40px; gap: 0; }
+  .hero-title { margin-top: 0; font-size: clamp(38px, 10.4vw, 72px); }
+  .hero-sub { margin-top: 12px; font-size: var(--t-sm); }
+  .hero-actions { margin-top: 18px; }
 
   .spread, .spread.is-flip { grid-template-columns: 1fr; }
   .spread.is-flip .spread-text { order: 0; }
@@ -998,6 +1001,9 @@ html.intro:not(.intro-open) .announce, html.intro:not(.intro-open) .top { opacit
   .colecao-tools { width: 100%; justify-content: space-between; }
   .filters button { padding: 0 12px; }
   .grid { gap: 32px 10px; }
+  /* Os seis tamanhos da calça cabem numa linha só */
+  .sizes > div { gap: 6px; flex-wrap: nowrap; }
+  .sizes button { flex: 1 1 0; min-width: 0; max-width: 58px; padding: 0; }
   .card-row { flex-direction: column; gap: 0; }
   .card-dots { margin-top: 6px; }
   .detalhes-head { margin-bottom: 40px; }
