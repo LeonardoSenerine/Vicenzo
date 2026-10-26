@@ -215,6 +215,9 @@ if (root.classList.contains('intro')) {
   ];
   const FIM = 3.4;
   const ABRIR = 2.1;
+  // A coreografia acima foi escrita em 3,4 s; RITMO 2 toca tudo em 1,7 s para não
+  // segurar quem chega pela primeira vez
+  const RITMO = 2;
   const ZOOM_MAX = 60;
   const v = { cortina: 0, subida: 1, linha: 0, furo: 0, marca: 1, zoom: 0, centro: 0, veu: 1, foto: 0 };
   // A foto do hero chega um pouco ampliada e assenta junto com o zoom, terminando
@@ -236,7 +239,7 @@ if (root.classList.contains('intro')) {
     c.width = tam;
     c.height = tam;
     const ctx = c.getContext('2d');
-    ctx.font = `500 ${tam}px "Bodoni Moda"`;
+    ctx.font = `600 ${tam}px "Bodoni Moda"`;
     ctx.fillText('I', 0, tam * 0.9);
     const linhaPx = ctx.getImageData(0, Math.round(tam * 0.9 - tam * 0.34), tam, 1).data;
     let ini = -1;
@@ -308,7 +311,7 @@ if (root.classList.contains('intro')) {
     ultimo = agora;
     // A pressa cresce aos poucos, sem tranco na velocidade
     velocidade += (alvo - velocidade) * Math.min(1, dt * 7);
-    tempo += dt * velocidade;
+    tempo += dt * velocidade * RITMO;
     passos.forEach(([k, de, para, ini, dur, curva]) => {
       const p = Math.min(Math.max((tempo - ini) / dur, 0), 1);
       v[k] = de + (para - de) * curva(p);
@@ -322,7 +325,7 @@ if (root.classList.contains('intro')) {
   // O hero só começa a se montar quando a câmera termina de entrar
   const ajustarHero = () => {
     const decorrido = (performance.now() - t0) / 1000;
-    root.style.setProperty('--intro-delay', `${(decorrido + (FIM - tempo) / Math.max(alvo, 1) - 0.6).toFixed(2)}s`);
+    root.style.setProperty('--intro-delay', `${(decorrido + (FIM - tempo) / (Math.max(alvo, 1) * RITMO) - 0.6).toFixed(2)}s`);
   };
 
   const pressa = () => {
@@ -334,15 +337,15 @@ if (root.classList.contains('intro')) {
   ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(ev => addEventListener(ev, pressa, { once: true, passive: true }));
   addEventListener('resize', () => { medir(); aplicar(); });
 
-  // Espera a Bodoni carregar para medir as letras (no máximo 1,2 s)
-  Promise.race([document.fonts.load('500 100px "Bodoni Moda"'), new Promise(r => setTimeout(r, 1200))]).then(() => {
+  // Espera a Bodoni carregar para medir as letras (no máximo 0,6 s)
+  Promise.race([document.fonts.load('600 100px "Bodoni Moda"'), new Promise(r => setTimeout(r, 600))]).then(() => {
     medir();
     aplicar();
     ajustarHero();
     ultimo = performance.now();
     requestAnimationFrame(quadro);
   });
-  setTimeout(fim, 8000);
+  setTimeout(fim, 4000);
 }
 
 // Transição entre estados: a foto de origem recebe o nome "peca" antes da troca e a
@@ -923,11 +926,11 @@ $('[data-checkout]').addEventListener('click', e => {
 // (fração da altura da foto). Altura/largura da foto converte a cintura para a
 // unidade do palco, que é a largura dele.
 const LOOK_IMG = {
-  'camisa-branca': { src: 'assets/img/11.jpg', cintura: 0.285, proporcao: 4 / 3 },
-  'camisa-listrada': { src: 'assets/img/look-listrada.jpg', cintura: 0.31, proporcao: 3 / 2 },
-  'calca-camelo': { src: 'assets/img/11.jpg', cintura: 0.285, proporcao: 4 / 3 },
-  'calca-cinza-chumbo': { src: 'assets/img/9.jpg', cintura: 0.30, proporcao: 4 / 3 },
-  'calca-marrom': { src: 'assets/img/10.jpg', cintura: 0.29, proporcao: 4 / 3 },
+  'camisa-branca': { src: 'assets/img/11-1200.webp', cintura: 0.285, proporcao: 4 / 3 },
+  'camisa-listrada': { src: 'assets/img/look-listrada-1200.webp', cintura: 0.31, proporcao: 3 / 2 },
+  'calca-camelo': { src: 'assets/img/11-1200.webp', cintura: 0.285, proporcao: 4 / 3 },
+  'calca-cinza-chumbo': { src: 'assets/img/9-1200.webp', cintura: 0.30, proporcao: 4 / 3 },
+  'calca-marrom': { src: 'assets/img/10-1200.webp', cintura: 0.29, proporcao: 4 / 3 },
 };
 const look = { camisa: { id: 'camisa-branca', size: null }, calca: { id: 'calca-camelo', size: null } };
 
@@ -1010,10 +1013,39 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('is-on'), 2800);
 }
 
-// Vídeos só tocam sozinhos se a pessoa não pediu menos movimento
+// O filme não baixa na abertura (2 MB): começa quando chega perto da tela
+// e pausa quando sai. Quem pediu menos movimento recebe os controles.
+const videos = $$('video[data-autoplay]');
 if (!MOTION) {
-  $$('video[autoplay]').forEach(v => { v.removeAttribute('autoplay'); v.pause(); v.controls = true; });
+  videos.forEach(v => { v.controls = true; });
+} else if ('IntersectionObserver' in window) {
+  const vio = new IntersectionObserver(entries => entries.forEach(({ target: v, isIntersecting }) => {
+    if (isIntersecting) v.play().catch(() => { v.controls = true; });
+    else if (!v.paused) v.pause();
+  }), { rootMargin: '300px 0px' });
+  videos.forEach(v => vio.observe(v));
+} else {
+  videos.forEach(v => { v.autoplay = true; v.preload = 'auto'; });
 }
+
+// Som opcional no filme em que o Vincenzo fala. Ligar volta ao começo da fala;
+// saiu da tela, o filme pausa (acima) e o som desliga junto. Quem pediu menos
+// movimento já tem os controles nativos, com o próprio botão de som.
+$$('[data-som]').forEach(b => {
+  const v = b.previousElementSibling;
+  if (!MOTION) { b.remove(); return; }
+  const setSom = ligado => {
+    v.muted = !ligado;
+    b.setAttribute('aria-pressed', ligado);
+    $('.som-texto', b).textContent = ligado ? 'Desligar som' : 'Ligar som';
+  };
+  b.addEventListener('click', () => {
+    const ligar = v.muted;
+    if (ligar) { v.currentTime = 0; v.play().catch(() => {}); }
+    setSom(ligar);
+  });
+  v.addEventListener('pause', () => { if (!v.muted) setSom(false); });
+});
 
 renderBag();
 syncFromHash();
@@ -1023,17 +1055,15 @@ syncFromHash();
 const NOTICE_KEY = 'vs-aviso';
 let noticeSeen = false;
 try { noticeSeen = localStorage.getItem(NOTICE_KEY) === '1'; } catch { /* sem armazenamento: mostra o aviso */ }
-if (!noticeSeen) {
+// Entra só depois da primeira rolagem (ou de 8 s parado), para não cobrir a abertura.
+const showNotice = () => {
   const notice = document.createElement('div');
   notice.className = 'notice';
   notice.setAttribute('role', 'region');
   notice.setAttribute('aria-label', 'Aviso sobre armazenamento');
   notice.innerHTML = `
-    <p>Usamos o armazenamento do seu navegador só para guardar a sua sacola. Não usamos cookies de publicidade nem de rastreamento.</p>
-    <div class="notice-actions">
-      <button type="button">Entendi</button>
-      <a href="privacidade.html#cookies">Saiba mais</a>
-    </div>`;
+    <p>Só guardamos a sua sacola neste navegador, sem rastreamento. <a href="privacidade.html#cookies">Saiba mais</a></p>
+    <button type="button">Entendi</button>`;
   document.body.append(notice);
   $('button', notice).addEventListener('click', () => {
     try { localStorage.setItem(NOTICE_KEY, '1'); } catch { /* fecha só nesta visita */ }
@@ -1041,6 +1071,18 @@ if (!noticeSeen) {
     notice.classList.add('is-leaving');
     setTimeout(() => notice.remove(), 600);
   });
+};
+if (!noticeSeen) {
+  let shown = false;
+  const once = () => {
+    if (shown) return;
+    shown = true;
+    removeEventListener('scroll', onScroll);
+    showNotice();
+  };
+  const onScroll = () => { if (scrollY > 120) once(); };
+  addEventListener('scroll', onScroll, { passive: true });
+  setTimeout(once, 8000);
 }
 
 // ---------- Movimento ----------
