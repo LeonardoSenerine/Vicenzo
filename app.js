@@ -1111,7 +1111,7 @@ $$('.title-lg, .marca-title, .spread-text h3, .pv-pairs h3').forEach(el => {
   el.classList.add('is-mask');
   el.innerHTML = `<span class="rise-in">${el.innerHTML}</span>`;
 });
-$$('.colecao-intro, .colecao-tools, .acervo-rotulo, .acervo-lead, .acervo-pontos > li, .acervo .link-arrow, .looks-sub, .monte-sub, .spread-text p, .spread-text .link-arrow, .marca-lead, .marca-body, .contraste-palavras, .servico > div, .news, .foot-cols > div')
+$$('.colecao-intro, .colecao-tools, .acervo-rotulo, .acervo-lead, .acervo-corpo, .acervo .link-arrow, .looks-sub, .monte-sub, .spread-text p, .spread-text .link-arrow, .marca-lead, .marca-body, .contraste-palavras, .servico > div, .news, .foot-cols > div')
   .forEach(el => { el.dataset.rise = ''; });
 const stagger = (els, step) => {
   const byParent = new Map();
