@@ -407,14 +407,47 @@ em { font-style: italic; }
 }
 .contraste-palavras span:last-child { font-style: italic; font-weight: 500; }
 
-.filme {
-  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap);
-  margin-top: clamp(80px, 11vw, 180px);
+/* ---------- O Acervo ----------
+   O que a coleção representa: uma pausa escura, como uma sala de projeção, com o
+   Vincenzo falando de um lado e as ideias da coleção do outro. */
+.acervo {
+  margin-top: var(--sec); padding: var(--sec) var(--pad);
+  background: var(--carvao); color: var(--marfim);
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap);
+  grid-template-areas: "filme filme filme filme filme . head head head head head head"
+                       "filme filme filme filme filme . texto texto texto texto texto texto";
+  grid-template-rows: auto 1fr;
 }
-/* O filme é um Reels (9:16): no computador vale a altura da tela, centralizado,
-   para não cortar o letreiro "Nova Coleção" gravado na imagem */
-.filme-item { grid-column: 1 / -1; justify-self: center; position: relative; height: min(88svh, 960px); aspect-ratio: 9 / 16; }
-.filme video { display: block; width: 100%; height: 100%; object-fit: cover; background: var(--carvao-2); }
+.acervo-head { grid-area: head; align-self: end; margin-bottom: clamp(32px, 4vw, 56px); }
+.acervo-rotulo { font-size: var(--t-xs); letter-spacing: .14em; text-transform: uppercase; color: rgba(244, 240, 232, .62); margin-bottom: 18px; }
+.acervo .title-lg { max-width: 11em; }
+.acervo-texto { grid-area: texto; max-width: 34em; }
+.acervo-lead {
+  font-family: var(--editorial); font-weight: 600; font-variation-settings: "opsz" 11;
+  font-size: clamp(22px, 1.9vw, 30px); line-height: 1.3; letter-spacing: -.005em;
+  margin-bottom: clamp(32px, 4vw, 52px); text-wrap: pretty;
+}
+.acervo-pontos { list-style: none; margin: 0 0 clamp(32px, 4vw, 48px); padding: 0; counter-reset: ponto; }
+.acervo-pontos li {
+  counter-increment: ponto;
+  display: grid; grid-template-columns: 2.4em 1fr; column-gap: 12px;
+  padding: 18px 0; border-top: 1px solid var(--fio-claro);
+}
+.acervo-pontos li:last-child { border-bottom: 1px solid var(--fio-claro); }
+.acervo-pontos li::before {
+  content: counter(ponto, decimal-leading-zero); grid-row: span 2;
+  font-size: var(--t-xs); letter-spacing: .08em; color: rgba(244, 240, 232, .5); padding-top: 4px;
+}
+.acervo-pontos h3 { font-family: var(--editorial); font-weight: 600; font-variation-settings: "opsz" 11; font-size: 21px; line-height: 1.2; margin-bottom: 6px; }
+.acervo-pontos p { color: rgba(244, 240, 232, .72); font-size: var(--t-sm); line-height: 1.55; }
+.acervo .link-arrow { color: var(--marfim); }
+/* Colada na seção seguinte, que também tem fundo: sem faixa clara entre as duas */
+.acervo + .detalhes { margin-top: 0; }
+
+/* O filme é um Reels (9:16): vale a altura da tela, para não cortar o letreiro
+   "Nova Coleção" gravado na imagem */
+.filme-item { grid-area: filme; justify-self: start; align-self: center; position: relative; height: min(84svh, 860px); aspect-ratio: 9 / 16; }
+.filme-item video { display: block; width: 100%; height: 100%; object-fit: cover; background: var(--carvao-2); }
 
 /* Som opcional: o filme começa mudo (regra dos navegadores para tocar sozinho)
    e um toque liga, voltando ao começo da fala. As barras só se mexem com som. */
@@ -962,6 +995,9 @@ html.intro:not(.intro-open) .announce, html.intro:not(.intro-open) .top { opacit
 }
 
 @media (max-width: 900px) {
+  /* O Acervo vira uma coluna: título, filme e as ideias da coleção */
+  .acervo { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "filme" "texto"; grid-template-rows: none; }
+  .filme-item { justify-self: center; height: min(80svh, 820px); margin-bottom: clamp(36px, 6vw, 56px); }
   .hero { grid-template-columns: 1fr; min-height: 0; }
   .hero-media { order: -1; background: none; }
   .motion .hero-media img { translate: none; scale: 1; }
@@ -1030,8 +1066,8 @@ html.intro:not(.intro-open) .announce, html.intro:not(.intro-open) .top { opacit
 
 @media (max-width: 640px) {
   /* No celular o filme sangra de ponta a ponta, como a foto da marca */
-  .filme-item { justify-self: stretch; height: auto; margin: 0 calc(-1 * var(--pad)); }
-  .filme video { height: auto; aspect-ratio: 9 / 16; max-width: none; }
+  .filme-item { justify-self: stretch; height: auto; margin: 0 calc(-1 * var(--pad)) clamp(36px, 6vw, 56px); }
+  .filme-item video { height: auto; aspect-ratio: 9 / 16; max-width: none; }
   .announce-sep, .announce-extra { display: none; }
   .colecao-tools { width: 100%; justify-content: space-between; }
   .filters button { padding: 0 12px; }
