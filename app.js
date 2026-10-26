@@ -1055,7 +1055,7 @@ syncFromHash();
 const NOTICE_KEY = 'vs-aviso';
 let noticeSeen = false;
 try { noticeSeen = localStorage.getItem(NOTICE_KEY) === '1'; } catch { /* sem armazenamento: mostra o aviso */ }
-// Entra só depois da primeira rolagem (ou de 8 s parado), para não cobrir a abertura.
+// Entra só depois que a pessoa rola a página (ou de 8 s parada), para não cobrir a abertura.
 const showNotice = () => {
   const notice = document.createElement('div');
   notice.className = 'notice';
@@ -1080,7 +1080,12 @@ if (!noticeSeen) {
     removeEventListener('scroll', onScroll);
     showNotice();
   };
-  const onScroll = () => { if (scrollY > 120) once(); };
+  // Só conta a rolagem feita pela pessoa: a do navegador ao recarregar e a da
+  // abertura voltando ao topo não têm roda, dedo nem tecla antes delas
+  let gesto = false;
+  const marca = () => { gesto = true; };
+  ['wheel', 'touchmove', 'keydown'].forEach(ev => addEventListener(ev, marca, { once: true, passive: true }));
+  const onScroll = () => { if (gesto && scrollY > 120) once(); };
   addEventListener('scroll', onScroll, { passive: true });
   setTimeout(once, 8000);
 }
