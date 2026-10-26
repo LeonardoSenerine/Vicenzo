@@ -84,15 +84,34 @@ em { font-style: italic; }
   text-decoration: none;
   transition: background .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease);
 }
+/* O pesponto: a costura aparente da alfaiataria é o gesto de todos os botões.
+   Um traço de 6px a cada 10px; repetido na horizontal, ele "corre" quando a
+   posição do fundo anda 10px, como a linha passando na máquina. */
+:root { --ponto: linear-gradient(90deg, currentColor 60%, transparent 0); }
+@keyframes costura { to { background-position: 10px 0, -10px 100%; } }
+@keyframes costura-linha { to { background-position: 10px 100%; } }
+
+/* Botão principal: etiqueta costurada em cima e embaixo. No hover o couro entra
+   da esquerda, como tecido sendo puxado, e o pesponto corre. */
 .btn { position: relative; isolation: isolate; overflow: hidden; transition: color .3s var(--ease), border-color .3s var(--ease), scale .2s var(--out); }
 .btn::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
-  background: var(--couro); transform: scaleY(0); transform-origin: 50% 100%;
-  transition: transform .45s var(--out);
+  background: var(--couro); transform: scaleX(0); transform-origin: 100% 50%;
+  transition: transform .55s var(--out);
 }
-.btn:hover { border-color: var(--couro); }
-.btn:hover::before { transform: scaleY(1); }
+.btn::after {
+  content: ""; position: absolute; inset: 6px 10px; z-index: -1; pointer-events: none;
+  background: var(--ponto) 0 0 / 10px 1px repeat-x, var(--ponto) 0 100% / 10px 1px repeat-x;
+  opacity: .32; transition: opacity .3s var(--ease), inset .45s var(--out);
+}
+@media (hover: hover) {
+  .btn:hover { border-color: var(--couro); }
+  .btn:hover::before { transform: scaleX(1); transform-origin: 0 50%; }
+  .btn:hover::after { opacity: .75; inset: 5px 8px; animation: costura .55s linear infinite; }
+}
 .btn:active { scale: .98; }
+.btn:active::before { transform: scaleX(1); transform-origin: 0 50%; transition-duration: .3s; }
+.btn:focus-visible { outline: 1.5px solid var(--couro); outline-offset: 3px; }
 .btn.is-busy { pointer-events: none; }
 .btn.is-busy .btn-label::after {
   content: ""; display: inline-block; width: 12px; height: 12px; margin-left: 10px; vertical-align: -1px;
@@ -101,14 +120,25 @@ em { font-style: italic; }
 }
 @keyframes spin { to { rotate: 1turn; } }
 .btn-block { width: 100%; }
+/* Link: a voz da marca, no itálico da Bodoni. A linha é um fio inteiro; no hover
+   vira pesponto correndo e a seta dá um passo. */
 .link-arrow {
-  display: inline-block;
-  font-size: var(--t-sm); font-weight: 500; text-decoration: none;
+  display: inline-flex; align-items: baseline; gap: .5em;
+  font-family: var(--editorial); font-style: italic; font-weight: 500; font-variation-settings: "opsz" 11;
+  font-size: 19px; line-height: 1.2; letter-spacing: -.005em; text-decoration: none;
+  padding-bottom: 5px;
   background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
-  padding-bottom: 3px;
-  transition: background-size .35s var(--out);
 }
-.link-arrow:hover { background-size: 0 1px; }
+.link-arrow::after {
+  content: "→"; font-family: var(--sans); font-style: normal; font-size: .78em;
+  transition: translate .4s var(--out);
+}
+@media (hover: hover) {
+  .link-arrow:hover { background: var(--ponto) 0 100% / 10px 1px repeat-x; animation: costura-linha .55s linear infinite; }
+  .link-arrow:hover::after { translate: 5px 0; }
+}
+.link-arrow:active::after { translate: 5px 0; }
+.link-arrow:focus-visible { outline: 1.5px solid currentColor; outline-offset: 4px; }
 .error { min-height: 1.4em; margin: 6px 0; font-size: var(--t-sm); color: var(--couro); }
 
 /* ---------- Anúncio e topo ---------- */
@@ -213,15 +243,15 @@ em { font-style: italic; }
 }
 .colecao-intro { max-width: 30em; margin-top: 16px; color: var(--pedra-txt); }
 .colecao-tools { display: flex; align-items: center; gap: 28px; }
-.filters { display: flex; gap: 4px; }
+.filters { display: flex; gap: 22px; }
 .filters button {
-  min-height: 40px; padding: 0 16px; border: 1px solid transparent; border-radius: 20px; background: none;
+  min-height: 40px; padding: 0 1px; border: 0; background: none;
   font-size: 14px; font-weight: 500; color: var(--pedra-txt);
   transition: color .2s, border-color .2s;
 }
 .filters button:hover { color: var(--carvao); }
 .filters button.is-on { color: var(--carvao); border-color: var(--carvao); }
-.count { font-size: 14px; color: var(--pedra-txt); white-space: nowrap; }
+.count { font-size: 14px; color: var(--pedra-txt); white-space: nowrap; padding-left: 24px; border-left: 1px solid var(--fio); line-height: 1.1; }
 
 .grid {
   list-style: none; margin: 0; padding: 0;
@@ -837,11 +867,12 @@ body.is-locked { overflow: hidden; }
 /* ---------- Microinterações ---------- */
 :root { interpolate-size: allow-keywords; }
 
-/* Filtros: uma pílula desliza até a opção escolhida */
+/* Filtros: um pesponto desliza por baixo da opção escolhida */
 .filters { position: relative; }
 .filters button.is-on { border-color: transparent; }
 .filter-pill {
-  position: absolute; top: 0; left: 0; height: 40px; border: 1px solid var(--carvao); border-radius: 20px;
+  position: absolute; left: 0; bottom: 6px; height: 1px; color: var(--carvao);
+  background: var(--ponto) 0 0 / 10px 1px repeat-x;
   pointer-events: none;
   transition: translate .5s var(--out), width .5s var(--out);
 }
@@ -1067,7 +1098,7 @@ html.intro:not(.intro-open) .announce, html.intro:not(.intro-open) .top { opacit
   .filme-item video { height: auto; aspect-ratio: 9 / 16; max-width: none; }
   .announce-sep, .announce-extra { display: none; }
   .colecao-tools { width: 100%; justify-content: space-between; }
-  .filters button { padding: 0 12px; }
+  .filters { gap: 18px; }
   .grid { gap: 32px 10px; }
   /* Os seis tamanhos da calça cabem numa linha só */
   .sizes > div { gap: 6px; flex-wrap: nowrap; }
